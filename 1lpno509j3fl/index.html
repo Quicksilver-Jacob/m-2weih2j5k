@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>测试练习2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<style>
+  :root { --ink:#1f2328; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bg:#f8fafc; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font: 16px/1.7 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+  header.paper { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px 24px; }
+  h1 { font-size: 22px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:12px; }
+  .meta { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:14px; }
+  .meta b { color:var(--ink); }
+  .bar { position:sticky; top:0; z-index:20; display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:rgba(248,250,252,.95); backdrop-filter:blur(6px); padding:12px 0; border-bottom:1px solid var(--line); margin:16px 0 8px; }
+  .timer { font-variant-numeric: tabular-nums; font-weight:700; font-size:18px; margin-right:auto; }
+  .timer.warn { color:#b91c1c; }
+  button { font: inherit; cursor:pointer; border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 12px; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.ghost { background:transparent; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .student { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+  .student input { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; min-width:180px; }
+  .q { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0; }
+  .q h3 { margin:0 0 10px; font-size:16px; font-weight:600; }
+  .opt { display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:10px; cursor:pointer; }
+  .opt:hover { background:#f1f5f9; }
+  .opt.on { background:#eff6ff; outline:1px solid #bfdbfe; }
+  .opt .k { font-weight:700; width:22px; flex:none; }
+  .foot { color:var(--muted); font-size:13px; margin-top:26px; }
+  .gate { position:fixed; inset:0; background:#fff; z-index:50; display:flex; align-items:center; justify-content:center; }
+  .gate .box { width:min(92vw,360px); border:1px solid var(--line); border-radius:14px; padding:22px; text-align:center; }
+  .gate input { width:100%; padding:10px; margin:12px 0; border:1px solid var(--line); border-radius:9px; font:inherit; }
+  .err { color:#b91c1c; font-size:14px; min-height:20px; }
+  .done { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:14px 16px; margin:16px 0; display:none; }
+  /* floating progress panel */
+  .panel { position:fixed; right:16px; bottom:16px; z-index:30; width:216px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 28px rgba(15,23,42,.14); font-size:13px; }
+  .panel-head { display:flex; align-items:center; gap:8px; padding:9px 10px 9px 12px; border-bottom:1px solid var(--line); }
+  .panel-title { font-weight:700; color:#334155; }
+  .panel-timer { margin-left:auto; font-variant-numeric:tabular-nums; font-weight:700; font-size:15px; color:#0f172a; }
+  .panel-timer.warn { color:#b91c1c; }
+  .panel-toggle { border:none; background:transparent; padding:0 2px; font-size:14px; line-height:1; color:#64748b; }
+  .panel-body { padding:10px 12px 12px; }
+  .panel-stats { display:flex; justify-content:space-between; color:#475569; margin-bottom:7px; }
+  .panel-stats b { color:#0f172a; }
+  .panel-bar { height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:9px; }
+  .panel-bar i { display:block; height:100%; width:0; background:#2563eb; border-radius:999px; transition:width .2s ease; }
+  .panel-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; max-height:132px; overflow:auto; }
+  .panel-grid button { padding:0; height:24px; font-size:11px; border-radius:6px; border:1px solid #e2e8f0; background:#fff; color:#64748b; }
+  .panel-grid button.ans { background:#dbeafe; border-color:#bfdbfe; color:#1d4ed8; font-weight:700; }
+  .panel-next { width:100%; margin-top:9px; padding:6px 8px; font-size:12px; }
+  .panel.collapsed { width:auto; }
+  .panel.collapsed .panel-body { display:none; }
+  .panel.collapsed .panel-head { border-bottom:none; }
+  .q.flash { outline:3px solid #93c5fd; outline-offset:3px; }
+  .print-head { display:none; }
+  @media (max-width:640px) { .panel { right:10px; bottom:10px; width:196px; } .panel-grid { grid-template-columns:repeat(5,1fr); } }
+  @media print {
+    @page { size:A4; margin:9mm 9mm 10mm; }
+    body { background:#fff; font-size:10.5pt; line-height:1.32; }
+    .bar, .student, .foot, .gate, .done, .panel, button, input { display:none !important; }
+    .wrap { max-width:none; padding:0; margin:0; }
+    header.paper { border:none; border-radius:0; border-bottom:1px solid #111; padding:0 0 2.5mm; margin:0 0 1.5mm; }
+    h1 { font-size:15pt; margin:0 0 .8mm; }
+    .sub { font-size:9pt; margin-bottom:.8mm; }
+    .meta { font-size:8.5pt; gap:8mm; }
+    #instructions { font-size:9pt !important; margin:1mm 0 0 !important; }
+    .print-head { display:block; font-size:9pt; margin-top:2mm; color:#111; }
+    .q { break-inside:avoid; page-break-inside:avoid; border:0; border-radius:0; padding:1.6mm 0 1.2mm; margin:0; background:#fff; }
+    .q + .q { border-top:1px dotted #cbd5e1; }
+    .q h3 { display:inline; font-size:10.5pt; margin:0 1.5mm 0 0; }
+    .q .stem { display:inline; }
+    .opt { padding:.35mm 0; gap:2mm; }
+    .opt:hover { background:none; }
+    .opt .k { width:6mm; }
+    a { color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden>
+  <div class="box">
+    <h3 style="margin:0">需要访问口令</h3>
+    <p class="sub">请输入老师提供的口令</p>
+    <input id="gateInput" type="password" autocomplete="off" />
+    <div class="err" id="gateErr"></div>
+    <button class="primary" id="gateBtn">进入试卷</button>
+  </div>
+</div>
+<div class="wrap">
+  <header class="paper">
+    <h1 id="title"></h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="meta">
+      <span>题数 <b id="count"></b></span>
+      <span id="limitWrap">限时 <b id="limit"></b></span>
+    </div>
+    <p id="instructions" style="margin:12px 0 0;color:#374151"></p>
+    <div class="print-head">姓名：______________　学号：______________　日期：______________</div>
+  </header>
+
+  <div class="student">
+    <input id="sName" placeholder="姓名" autocomplete="off" />
+    <input id="sId" placeholder="学号 / 班级" autocomplete="off" />
+    <button class="ghost" id="btnLang">EN</button>
+  </div>
+
+  <div class="bar">
+    <span class="timer" id="timer">--:--</span>
+    <button id="btnPrint">打印 / PDF</button>
+    <button id="btnImport">导入答案</button>
+    <button id="btnExport" class="primary">导出答案</button>
+    <button id="btnClear" class="ghost">清空</button>
+    <input id="fileInput" type="file" accept="application/json" hidden />
+  </div>
+
+  <div class="done" id="done"></div>
+  <div id="paper"></div>
+
+  <aside class="panel" id="panel" aria-label="答题进度">
+    <div class="panel-head">
+      <span class="panel-title">答题进度</span>
+      <span class="panel-timer" id="panelTimer">--:--</span>
+      <button class="panel-toggle" id="panelToggle" title="收起 / 展开">▾</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-stats"><span>已答 <b id="doneCount">0</b></span><span>未答 <b id="todoCount">0</b></span></div>
+      <div class="panel-bar"><i id="panelProgress"></i></div>
+      <div class="panel-grid" id="panelGrid"></div>
+      <button class="panel-next" id="panelNext">跳到第一道未答</button>
+    </div>
+  </aside>
+  <div class="foot">答案会自动保存在本机浏览器中；换设备时请先导出，再在新设备导入。</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+(function () {
+  var DATA = {"slug":"1lpno509j3fl","paperId":"p_mve2zld0_z2w9ja","title":"测试练习2","subtitle":"","instructions":"本卷为单选题，选出唯一正确答案。","durationMinutes":null,"passcode":"","showResults":false,"questions":[{"id":"m1-018","q":{"zh":"$\\sqrt{9}$ 属于下列哪个数集？","en":"Which number set does $\\sqrt{9}$ belong to?"},"options":{"A":{"zh":"仅 $\\mathbb{N}$","en":"Only $\\mathbb{N}$"},"B":{"zh":"$\\mathbb{N}$ 和 $\\mathbb{Z}$","en":"$\\mathbb{N}$ and $\\mathbb{Z}$"},"C":{"zh":"仅 $\\mathbb{Q}$","en":"Only $\\mathbb{Q}$"},"D":{"zh":"$\\mathbb{N}$、$\\mathbb{Z}$、$\\mathbb{Q}$、$\\mathbb{R}$ 全部","en":"All of $\\mathbb{N}$, $\\mathbb{Z}$, $\\mathbb{Q}$, $\\mathbb{R}$"}}},{"id":"x01-096","q":{"zh":"满足 $\\{1,2\\}\\subseteq B\\subseteq\\{1,2,3,4,5\\}$ 的集合 $B$ 共有","en":"How many sets B satisfy {1,2} ⊆ B ⊆ {1,2,3,4,5}?"},"options":{"A":{"zh":"4 个","en":"4 sets"},"B":{"zh":"6 个","en":"6 sets"},"C":{"zh":"8 个","en":"8 sets"},"D":{"zh":"16 个","en":"16 sets"}}},{"id":"x01-085","q":{"zh":"某兴趣班有 $50$ 名学员，每人至少参加书法、绘画中的一个。参加书法的有 $38$ 人，参加绘画的有 $30$ 人。若两样都参加的学员中有 $6$ 人同时参加了摄影社，而摄影社只有这 $6$ 人，求两样都参加且未参加摄影社的人数","en":"A class has $50$ members, each taking calligraphy or painting. $38$ take calligraphy and $30$ take painting. Exactly $6$ of those taking both also join the photography club, and no one else joins it. How many take both calligraphy and painting but not photography?"},"options":{"A":"$16$","B":"$12$","C":"$20$","D":"$22$"}},{"id":"x01-033","q":{"zh":"已知集合 $A = \\{1, 2, 3\\}$，则下列表示中错误的是","en":"Given the set $A = \\{1, 2, 3\\}$, which of the following statements is false?"},"options":{"A":"$\\{1\\} \\subseteq A$","B":"$1 \\subseteq A$","C":"$1 \\in A$","D":"$4 \\notin A$"}},{"id":"x01-108","q":{"zh":"集合 $\\{x\\mid -1\u003cx\\leqslant 2\\}$ 用区间表示为","en":"The set $\\{x\\mid -1\u003cx\\leqslant 2\\}$ in interval notation is"},"options":{"A":{"zh":"闭区间 $[-1,2]$","en":"closed interval $[-1,2]$"},"B":{"zh":"左开右闭区间 $(-1,2]$","en":"left-open, right-closed interval $(-1,2]$"},"C":{"zh":"开区间 $(-1,2)$","en":"open interval $(-1,2)$"},"D":{"zh":"左闭右开区间 $[-1,2)$","en":"left-closed, right-open interval $[-1,2)$"}}},{"id":"x01-059","q":{"zh":"设全集 $U = \\mathbb{R}$，$A = (-\\infty, 1]$，$B = (-2, 3)$，则 $\\complement_U(A \\cup B) =$","en":"Let the universal set be $U = \\mathbb{R}$, with $A = (-\\infty, 1]$ and $B = (-2, 3)$. Find $\\complement_U(A \\cup B)$."},"options":{"A":"$(1, 3)$","B":"$[3, +\\infty)$","C":"$(-\\infty, -2) \\cup (3, +\\infty)$","D":"$(-\\infty, -2] \\cup [1, +\\infty)$"}},{"id":"x01-067","q":{"zh":"已知 $A = \\{x \\mid x \\text{ 是 } 12 \\text{ 的正因数}\\}$，$B = \\{x \\in \\mathbb{Z}^+ \\mid x \\leqslant 4\\}$，则 $A \\cap B$ 的子集个数是","en":"Let $A$ be the set of positive divisors of $12$ and $B = \\{x \\in \\mathbb{Z}^+ \\mid x \\leqslant 4\\}$. How many subsets does $A \\cap B$ have?"},"options":{"A":"$4$","B":"$8$","C":"$32$","D":"$16$"}},{"id":"x01-103","q":{"zh":"下列各数中，属于有理数集 $\\mathbb{Q}$ 的是","en":"Which of the following numbers belongs to the set of rational numbers $\\mathbb{Q}$?"},"options":{"A":"$\\sqrt{3}$","B":"$\\pi$","C":"$\\sqrt{9}$","D":"$\\frac{\\pi}{2}$"}},{"id":"m1s-016","q":{"zh":"已知 $A = \\{x \\mid -1 \\leqslant x \\leqslant 4\\}$，$B = \\{x \\mid m+1 \\leqslant x \\leqslant 2m-1\\}$。若 $B \\subseteq A$，则实数 $m$ 的取值范围是","en":"Given $A = \\{x \\mid -1 \\leqslant x \\leqslant 4\\}$ and $B = \\{x \\mid m+1 \\leqslant x \\leqslant 2m-1\\}$. If $B \\subseteq A$, the range of $m$ is"},"options":{"A":"$2 \\leqslant m \\leqslant \\frac{5}{2}$","B":"$m \u003c 2$","C":"$-2 \\leqslant m \\leqslant \\frac{5}{2}$","D":"$m \\leqslant \\frac{5}{2}$"}},{"id":"m1-038","q":{"zh":"集合 $\\{x \\in \\mathbb{Z} \\mid -3 \u003c x \\leqslant 2\\}$ 中元素的个数是","en":"The number of elements in $\\{x \\in \\mathbb{Z} \\mid -3 \u003c x \\leqslant 2\\}$ is"},"options":{"A":"4","B":"5","C":"6","D":"7"}},{"id":"m1s-008","q":{"zh":"已知 $A = \\{x \\mid x^2 \\leqslant 4\\}$，$B = \\{x \\mid x > 0\\}$，则 $A \\cap B =$","en":"Given $A = \\{x \\mid x^2 \\leqslant 4\\}$, $B = \\{x \\mid x > 0\\}$, then $A \\cap B =$"},"options":{"A":"$(0, 2)$","B":"$[0, 2]$","C":"$(-2, 2]$","D":"$(0, 2]$"}},{"id":"m1-040","q":{"zh":"集合 $A, B, C$ 满足 $|A|=|B|=|C|=10$，$|A \\cap B|=4$，$|B \\cap C|=5$，$|A \\cap C|=3$，$|A \\cap B \\cap C|=2$，则 $|A \\cup B \\cup C| =$","en":"If $|A|=|B|=|C|=10$, $|A \\cap B|=4$, $|B \\cap C|=5$, $|A \\cap C|=3$, $|A \\cap B \\cap C|=2$, then $|A \\cup B \\cup C| =$"},"options":{"A":"18","B":"20","C":"22","D":"24"}},{"id":"m1s-021","q":{"zh":"下列各数中是无理数的是","en":"Which of the following numbers is irrational?"},"options":{"A":"$\\frac{22}{7}$","B":"$\\sqrt{5}$","C":"$\\sqrt{16}$","D":"$-\\frac{3}{5}$"}},{"id":"x01-040","q":{"zh":"设 $x = \\sqrt{25}$，$y = \\pi - 3$，$z = \\frac{22}{7}$，则下列判断正确的是","en":"Let $x = \\sqrt{25}$, $y = \\pi - 3$ and $z = \\frac{22}{7}$. Which judgment is correct?"},"options":{"A":{"zh":"$x \\in \\mathbb{N}$，$y \\in \\mathbb{Q}$，$z \\in \\mathbb{Q}$","en":"$x \\in \\mathbb{N}$, $y \\in \\mathbb{Q}$, $z \\in \\mathbb{Q}$"},"B":{"zh":"$x \\in \\mathbb{Z}$ 且 $x \\notin \\mathbb{N}$","en":"$x \\in \\mathbb{Z}$ and $x \\notin \\mathbb{N}$"},"C":{"zh":"$y \\in \\mathbb{Q}$ 且 $z \\notin \\mathbb{Q}$","en":"$y \\in \\mathbb{Q}$ and $z \\notin \\mathbb{Q}$"},"D":{"zh":"$x \\in \\mathbb{Q}$，$y \\notin \\mathbb{Q}$，$z \\in \\mathbb{Q}$","en":"$x \\in \\mathbb{Q}$, $y \\notin \\mathbb{Q}$, $z \\in \\mathbb{Q}$"}}},{"id":"m1-032","q":{"zh":"集合 $A = \\{1, 2, 3\\}$ 的真子集个数是","en":"The number of proper subsets of $A = \\{1, 2, 3\\}$ is"},"options":{"A":"6","B":"7","C":"8","D":"9"}},{"id":"x02-069","q":{"zh":"不等式 $|x-1| \u003c |x+2|$ 的解集是","en":"The solution set of $|x-1| \u003c |x+2|$ is"},"options":{"A":"$(-\\infty, -\\frac{1}{2})$","B":"$\\{-\\frac{1}{2}\\}$","C":"$(-\\frac{1}{2}, +\\infty)$","D":"$\\mathbb{R}$"}},{"id":"x02-054","q":{"zh":"不等式组 $\\begin{cases} x + 2 \\geqslant 0 \\\\ 2x - 1 \\leqslant 5 \\end{cases}$ 的解集是","en":"The solution set of the system $\\begin{cases} x + 2 \\geqslant 0 \\\\ 2x - 1 \\leqslant 5 \\end{cases}$ is"},"options":{"A":"$[-2, 3]$","B":"$(-\\infty, -2] \\cup [3, +\\infty)$","C":"$-2 \u003c x \u003c 3$","D":"$[3, +\\infty)$"}},{"id":"x02-096","q":{"zh":"已知 $-3\u003ca\u003c2$，$-1\u003cb\u003c4$，则 $2a-3b$ 的取值范围是","en":"Given $-3\u003ca\u003c2$ and $-1\u003cb\u003c4$, the range of $2a-3b$ is"},"options":{"A":"$(-18,7)$","B":"$(-9,16)$","C":"$(-15,5)$","D":"$(-10,5)$"}},{"id":"m1-053","q":{"zh":"不等式 $|x-3| \u003c |x+1|$ 的解集是","en":"The solution of $|x-3| \u003c |x+1|$ is"},"options":{"A":"$x > 1$","B":"$x \u003c 1$","C":"$x > -1$","D":"$x \u003c 3$"}},{"id":"m1s-038","q":{"zh":"已知 $a > 0$，$b > 0$ 且 $a + b = 4$，则 $ab$ 的最大值是","en":"Given $a > 0$, $b > 0$ and $a + b = 4$, the maximum value of $ab$ is"},"options":{"A":"$2$","B":"$8$","C":"$4$","D":"$16$"}},{"id":"x02-019","q":{"zh":"不等式 $\\frac{x+1}{x^2 - x + 1} > 0$ 的解集是","en":"What is the solution set of $\\frac{x+1}{x^2 - x + 1} > 0$?"},"options":{"A":"$(-1, +\\infty)$","B":"$(-1, 1)$","C":"$(-\\infty, -1)$","D":"$(-\\infty, -1) \\cup (1, +\\infty)$"}},{"id":"x02-001","q":{"zh":"在数轴的三个标记点中，点 $A$ 对应 $2$，点 $B$ 对应 $2.6$，点 $C$ 对应 $3$。满足不等式 $x > 3$ 的标记点共有","en":"On a number line, point $A$ marks $2$, point $B$ marks $2.6$, and point $C$ marks $3$. How many of these marked points satisfy $x > 3$?"},"options":{"A":{"zh":"$0$ 个","en":"None of them"},"B":{"zh":"$1$ 个","en":"Exactly one"},"C":{"zh":"$2$ 个","en":"Exactly two"},"D":{"zh":"$3$ 个","en":"All three"}}},{"id":"m1s-030","q":{"zh":"若不等式 $ax^2 + bx + 2 > 0$ 的解集为 $\\left(-\\frac{1}{2}, \\frac{1}{3}\\right)$，则 $a + b =$","en":"If the solution set of $ax^2 + bx + 2 > 0$ is $\\left(-\\frac{1}{2}, \\frac{1}{3}\\right)$, then $a + b =$"},"options":{"A":"$14$","B":"$-10$","C":"$10$","D":"$-14$"}},{"id":"m1s-045","q":{"zh":"设 $x, y$ 满足约束条件 $\\begin{cases} x \\geqslant 0 \\\\ y \\geqslant 0 \\\\ x \\leqslant 3 \\\\ x + y \\leqslant 4 \\end{cases}$，则 $z = 2x + y$ 的最大值是","en":"If $x, y$ satisfy $\\begin{cases} x \\geqslant 0 \\\\ y \\geqslant 0 \\\\ x \\leqslant 3 \\\\ x + y \\leqslant 4 \\end{cases}$, the maximum of $z = 2x + y$ is"},"options":{"A":"$6$","B":"$8$","C":"$7$","D":"$4$"}},{"id":"m1-009","q":{"zh":"不等式组 $\\begin{cases} x > 2 \\\\ x \\leqslant 5 \\end{cases}$ 的解集用区间表示为","en":"The solution set of $\\begin{cases} x > 2 \\\\ x \\leqslant 5 \\end{cases}$ in interval notation is"},"options":{"A":"$[2, 5]$","B":"$(2, 5)$","C":"$[2, 5)$","D":"$(2, 5]$"}},{"id":"m1-044","q":{"zh":"不等式 $x^2 - 4 \u003c 0$ 的解集是","en":"The solution of $x^2 - 4 \u003c 0$ is"},"options":{"A":"$(-\\infty, -2) \\cup (2, \\infty)$","B":"$(-2, 2)$","C":"$(-\\infty, 2)$","D":"$(2, \\infty)$"}},{"id":"x02-083","q":{"zh":"不等式 $|x-2| \\geqslant |x+1|$ 的解集是","en":"The solution set of $|x-2| \\geqslant |x+1|$ is"},"options":{"A":"$(-\\infty, \\frac{1}{2}]$","B":"$(\\frac{1}{2}, +\\infty)$","C":"$\\{\\frac{1}{2}\\}$","D":"$\\mathbb{R}$"}},{"id":"x02-075","q":{"zh":"不等式 $\\frac{x+1}{x^2+1} > 0$ 的解集是","en":"The solution set of $\\frac{x+1}{x^2+1} > 0$ is"},"options":{"A":"$(-1, +\\infty)$","B":"$(-\\infty, -1)$","C":"$(-1, 1)$","D":"$\\mathbb{R}$"}},{"id":"m1-015","q":{"zh":"不等式 $|2x + 1| \\geqslant 5$ 的解集是","en":"The solution set of $|2x + 1| \\geqslant 5$ is"},"options":{"A":"$[-3, 2]$","B":"$(-3, 2)$","C":"$(-\\infty, -3) \\cup (2, \\infty)$","D":"$(-\\infty, -3] \\cup [2, \\infty)$"}},{"id":"x02-023","q":{"zh":"关于 $x$ 的不等式 $x^2 - (m^2 + m)x + m^3 \u003c 0$ 的解集是","en":"What is the solution set of $x^2 - (m^2 + m)x + m^3 \u003c 0$ in $x$?"},"options":{"A":"$(m^2, m)$","B":"$(m, m^2)$","C":"$(-\\infty, m) \\cup (m^2, +\\infty)$","D":{"zh":"以上都不对，因为解集取决于 $m$ 与 $1$ 的大小","en":"None of these, because the set depends on how $m$ compares with 1"}}}]};
+  var KEY = 'csca-exam-' + DATA.slug;
+  var state = { answers: {}, name: '', sid: '', startedAt: Date.now(), submittedAt: 0, locked: false, lang: 'zh' };
+  var saveTimer = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        state = Object.assign(state, s);
+      }
+    } catch (e) {}
+    if (!state.startedAt) state.startedAt = Date.now();
+  }
+  function persist() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }, 150);
+  }
+  function fmt(sec) {
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function txt(v) { return typeof v === 'string' ? v : (v[state.lang] || v.zh || v.en || ''); }
+  function renderMath(root) {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(root, { delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ], throwOnError: false });
+    }
+  }
+
+  function render() {
+    document.getElementById('title').textContent = DATA.title;
+    document.getElementById('subtitle').textContent = DATA.subtitle || '';
+    document.getElementById('instructions').textContent = DATA.instructions || '';
+    document.getElementById('count').textContent = String(DATA.questions.length);
+    if (DATA.durationMinutes) {
+      document.getElementById('limit').textContent = DATA.durationMinutes + ' 分钟';
+    } else {
+      document.getElementById('limitWrap').style.display = 'none';
+    }
+
+    var host = document.getElementById('paper');
+    host.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var box = document.createElement('section');
+      box.className = 'q';
+      box.setAttribute('data-index', String(i));
+      var h = document.createElement('h3');
+      h.textContent = (i + 1) + '.';
+      box.appendChild(h);
+      var stem = document.createElement('div');
+      stem.className = 'stem';
+      stem.textContent = txt(q.q);
+      box.appendChild(stem);
+      ['A', 'B', 'C', 'D'].forEach(function (K) {
+        if (!q.options[K]) return;
+        var row = document.createElement('div');
+        row.className = 'opt' + (state.answers[q.id] === K ? ' on' : '');
+        row.setAttribute('data-q', q.id);
+        row.setAttribute('data-k', K);
+        var k = document.createElement('span'); k.className = 'k'; k.textContent = K + '.';
+        var v = document.createElement('span'); v.textContent = txt(q.options[K]);
+        row.appendChild(k); row.appendChild(v);
+        row.addEventListener('click', function () {
+          if (state.locked) return;
+          state.answers[q.id] = (state.answers[q.id] === K ? null : K);
+          persist();
+          render();
+        });
+        box.appendChild(row);
+      });
+      host.appendChild(box);
+    });
+    renderMath(host);
+    document.getElementById('sName').value = state.name || '';
+    document.getElementById('sId').value = state.sid || '';
+    renderPanel();
+  }
+
+  function buildPanelGrid() {
+    var grid = document.getElementById('panelGrid');
+    if (grid.childElementCount === DATA.questions.length) return;
+    grid.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = String(i + 1);
+      b.addEventListener('click', function () { jumpToQuestion(i); });
+      grid.appendChild(b);
+    });
+  }
+  function jumpToQuestion(i) {
+    var el = document.querySelector('.q[data-index="' + i + '"]');
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('flash');
+    setTimeout(function () { el.classList.remove('flash'); }, 1200);
+  }
+  function renderPanel() {
+    var total = DATA.questions.length;
+    var done = 0;
+    DATA.questions.forEach(function (q) { if (state.answers[q.id]) done += 1; });
+    document.getElementById('doneCount').textContent = String(done);
+    document.getElementById('todoCount').textContent = String(total - done);
+    document.getElementById('panelProgress').style.width = (total ? Math.round((done / total) * 100) : 0) + '%';
+    buildPanelGrid();
+    var grid = document.getElementById('panelGrid');
+    for (var i = 0; i < grid.children.length; i += 1) {
+      grid.children[i].className = state.answers[DATA.questions[i].id] ? 'ans' : '';
+    }
+    document.getElementById('panelNext').disabled = done >= total;
+  }
+
+  function tick() {
+    var panelTimer = document.getElementById('panelTimer');
+    if (!DATA.durationMinutes) {
+      var used = fmt((Date.now() - state.startedAt) / 1000);
+      document.getElementById('timer').textContent = used;
+      panelTimer.textContent = used;
+      return;
+    }
+    var left = DATA.durationMinutes * 60 - (Date.now() - state.startedAt) / 1000;
+    var el = document.getElementById('timer');
+    el.textContent = fmt(left);
+    panelTimer.textContent = fmt(left);
+    var warn = left <= 300;
+    if (warn) el.classList.add('warn');
+    panelTimer.classList.toggle('warn', warn);
+    if (left <= 0 && !state.locked) {
+      state.locked = true; state.submittedAt = Date.now(); persist();
+      var done = document.getElementById('done');
+      done.style.display = 'block';
+      done.textContent = '时间到，答案已锁定。请点击“导出答案”交给老师。';
+    }
+  }
+
+  document.getElementById('sName').addEventListener('input', function (e) { state.name = e.target.value; persist(); });
+  document.getElementById('sId').addEventListener('input', function (e) { state.sid = e.target.value; persist(); });
+
+  document.getElementById('btnClear').addEventListener('click', function () {
+    if (!confirm('确定清空所有已选答案？')) return;
+    state.answers = {}; state.locked = false; state.submittedAt = 0;
+    persist(); render();
+  });
+
+  document.getElementById('panelToggle').addEventListener('click', function () {
+    var panel = document.getElementById('panel');
+    panel.classList.toggle('collapsed');
+    this.textContent = panel.classList.contains('collapsed') ? '▸' : '▾';
+  });
+  document.getElementById('panelNext').addEventListener('click', function () {
+    for (var i = 0; i < DATA.questions.length; i += 1) {
+      if (!state.answers[DATA.questions[i].id]) { jumpToQuestion(i); return; }
+    }
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+
+  document.getElementById('btnExport').addEventListener('click', function () {
+    var out = {
+      paperId: DATA.paperId,
+      slug: DATA.slug,
+      student: { name: state.name || '', id: state.sid || '' },
+      answers: DATA.questions.map(function (q) { return { problemId: q.id, selected: state.answers[q.id] || null }; }),
+      startedAt: state.startedAt,
+      submittedAt: state.submittedAt || Date.now(),
+      durationSeconds: Math.round(((state.submittedAt || Date.now()) - state.startedAt) / 1000)
+    };
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'answers-' + DATA.slug + '-' + (state.name || 'student') + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('btnImport').addEventListener('click', function () { document.getElementById('fileInput').click(); });
+  document.getElementById('fileInput').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var obj = JSON.parse(String(reader.result));
+        if (obj.paperId && obj.paperId !== DATA.paperId) {
+          if (!confirm('这份答案属于另一份试卷，仍要导入吗？')) return;
+        }
+        var map = {};
+        (obj.answers || []).forEach(function (a) { if (a.selected) map[a.problemId] = a.selected; });
+        state.answers = map;
+        if (obj.student) { state.name = obj.student.name || state.name; state.sid = obj.student.id || state.sid; }
+        persist(); render();
+      } catch (err) { alert('文件格式不正确'); }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  });
+
+  document.getElementById('btnLang').addEventListener('click', function () {
+    state.lang = state.lang === 'zh' ? 'en' : 'zh';
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    persist(); render();
+  });
+
+  function boot() {
+    load();
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    if (DATA.passcode) {
+      var gate = document.getElementById('gate');
+      gate.hidden = false;
+      document.getElementById('gateBtn').addEventListener('click', function () {
+        if (document.getElementById('gateInput').value === DATA.passcode) {
+          gate.hidden = true;
+        } else {
+          document.getElementById('gateErr').textContent = '口令不正确';
+        }
+      });
+    }
+    render();
+    tick();
+    setInterval(tick, 1000);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

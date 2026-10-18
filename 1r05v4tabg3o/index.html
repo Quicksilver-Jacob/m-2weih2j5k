@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>CSCA 数学练习卷</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<style>
+  :root { --ink:#1f2328; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bg:#f8fafc; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font: 16px/1.7 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+  header.paper { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px 24px; }
+  h1 { font-size: 22px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:12px; }
+  .meta { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:14px; }
+  .meta b { color:var(--ink); }
+  .bar { position:sticky; top:0; z-index:20; display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:rgba(248,250,252,.95); backdrop-filter:blur(6px); padding:12px 0; border-bottom:1px solid var(--line); margin:16px 0 8px; }
+  .timer { font-variant-numeric: tabular-nums; font-weight:700; font-size:18px; margin-right:auto; }
+  .timer.warn { color:#b91c1c; }
+  button { font: inherit; cursor:pointer; border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 12px; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.ghost { background:transparent; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .student { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+  .student input { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; min-width:180px; }
+  .q { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0; }
+  .q h3 { margin:0 0 10px; font-size:16px; font-weight:600; }
+  .opt { display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:10px; cursor:pointer; }
+  .opt:hover { background:#f1f5f9; }
+  .opt.on { background:#eff6ff; outline:1px solid #bfdbfe; }
+  .opt .k { font-weight:700; width:22px; flex:none; }
+  .foot { color:var(--muted); font-size:13px; margin-top:26px; }
+  .gate { position:fixed; inset:0; background:#fff; z-index:50; display:flex; align-items:center; justify-content:center; }
+  .gate .box { width:min(92vw,360px); border:1px solid var(--line); border-radius:14px; padding:22px; text-align:center; }
+  .gate input { width:100%; padding:10px; margin:12px 0; border:1px solid var(--line); border-radius:9px; font:inherit; }
+  .err { color:#b91c1c; font-size:14px; min-height:20px; }
+  .done { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:14px 16px; margin:16px 0; display:none; }
+  @media print {
+    body { background:#fff; }
+    .bar, .student, .foot, button, .gate, .done { display:none !important; }
+    header.paper { border:none; padding:0; }
+    .q { break-inside: avoid; border:1px solid #ddd; margin:10px 0; }
+    .wrap { max-width:none; padding:0; }
+  }
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden>
+  <div class="box">
+    <h3 style="margin:0">需要访问口令</h3>
+    <p class="sub">请输入老师提供的口令</p>
+    <input id="gateInput" type="password" autocomplete="off" />
+    <div class="err" id="gateErr"></div>
+    <button class="primary" id="gateBtn">进入试卷</button>
+  </div>
+</div>
+<div class="wrap">
+  <header class="paper">
+    <h1 id="title"></h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="meta">
+      <span>题数 <b id="count"></b></span>
+      <span id="limitWrap">限时 <b id="limit"></b></span>
+    </div>
+    <p id="instructions" style="margin:12px 0 0;color:#374151"></p>
+  </header>
+
+  <div class="student">
+    <input id="sName" placeholder="姓名" autocomplete="off" />
+    <input id="sId" placeholder="学号 / 班级" autocomplete="off" />
+    <button class="ghost" id="btnLang">EN</button>
+  </div>
+
+  <div class="bar">
+    <span class="timer" id="timer">--:--</span>
+    <button id="btnPrint">打印 / PDF</button>
+    <button id="btnImport">导入答案</button>
+    <button id="btnExport" class="primary">导出答案</button>
+    <button id="btnClear" class="ghost">清空</button>
+    <input id="fileInput" type="file" accept="application/json" hidden />
+  </div>
+
+  <div class="done" id="done"></div>
+  <div id="paper"></div>
+  <div class="foot">答案会自动保存在本机浏览器中；换设备时请先导出，再在新设备导入。</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+(function () {
+  var DATA = {"slug":"1r05v4tabg3o","paperId":"p_mvdu0gq0_yvq2b5","title":"CSCA 数学练习卷","subtitle":"副标题","instructions":"本卷为单选题，选出唯一正确答案。","durationMinutes":10,"passcode":"","showResults":false,"questions":[{"id":"m1-026","q":{"zh":"已知 $A = \\{2, 4, 6, 8\\}$，$B = \\{3, 6, 9\\}$，$|A \\cup B| =$","en":"Given $A = \\{2, 4, 6, 8\\}$, $B = \\{3, 6, 9\\}$, $|A \\cup B| =$"},"options":{"A":"5","B":"6","C":"7","D":"8"}},{"id":"x01-042","q":{"zh":"已知 $P = \\{x \\mid x$ 是 $3$ 的倍数$\\}$，$Q = \\{x \\mid x$ 是 $6$ 的倍数$\\}$，$R = \\{x \\mid x$ 是 $2$ 的倍数$\\}$。对实数 $x$，“$x \\in P$”是“$x \\in Q \\cap R$”的","en":"Let $P = \\{x \\mid x$ is a multiple of $3\\}$, $Q = \\{x \\mid x$ is a multiple of $6\\}$ and $R = \\{x \\mid x$ is a multiple of $2\\}$. As a condition on a real number $x$, \"$x \\in P$\" is a ______ of \"$x \\in Q \\cap R$\"."},"options":{"A":{"zh":"充分不必要条件","en":"sufficient but not necessary condition"},"B":{"zh":"必要不充分条件","en":"necessary but not sufficient condition"},"C":{"zh":"充要条件","en":"necessary and sufficient condition"},"D":{"zh":"既不充分也不必要条件","en":"neither sufficient nor necessary condition"}}},{"id":"x01-068","q":{"zh":"某学校 $200$ 名学生中，会英语的有 $120$ 人，会日语的有 $80$ 人，会韩语的有 $60$ 人。会英语和日语的有 $45$ 人，会英语和韩语的有 $30$ 人，会日语和韩语的有 $20$ 人，三种语言都会的有 $10$ 人。三种语言都不会的有多少人？","en":"Of $200$ students, $120$ speak English, $80$ speak Japanese and $60$ speak Korean. Forty-five speak English and Japanese, $30$ speak English and Korean, $20$ speak Japanese and Korean, and $10$ speak all three. How many speak none of the three languages?"},"options":{"A":"$15$","B":"$20$","C":"$25$","D":"$35$"}},{"id":"m1s-012","q":{"zh":"集合 $\\{x \\mid x \\geqslant -1\\}$ 用区间表示为","en":"The set $\\{x \\mid x \\geqslant -1\\}$ in interval notation is"},"options":{"A":"$(-1, +\\infty)$","B":"$[-1, +\\infty)$","C":"$(-\\infty, -1]$","D":"$(-\\infty, -1)$"}},{"id":"x01-008","q":{"zh":"下列关于常用数集关系的表示中，正确的是","en":"Which statement about the common number sets is correct?"},"options":{"A":"$\\mathbb{Z} \\subseteq \\mathbb{N}$","B":"$\\mathbb{N} \\subseteq \\mathbb{Q}$","C":"$\\mathbb{Q} \\subseteq \\mathbb{Z}$","D":"$\\frac{1}{2} \\in \\mathbb{Z}$"}},{"id":"x01-076","q":{"zh":"设 $A = \\{x \\mid x^2 + 1 = 0,\\ x \\in \\mathbb{R}\\}$，$B = \\{x \\in \\mathbb{N} \\mid x \u003c 0\\}$，则下列结论正确的是","en":"Let $A = \\{x \\mid x^2 + 1 = 0,\\ x \\in \\mathbb{R}\\}$ and $B = \\{x \\in \\mathbb{N} \\mid x \u003c 0\\}$. Which conclusion is correct?"},"options":{"A":"$|A| = 1$","B":"$B = \\{0\\}$","C":"$A = B = \\varnothing$","D":"$A \\neq B$"}},{"id":"x01-070","q":{"zh":"数据表记录了四种水果的单价（元/千克）：苹果 $8.5$、香蕉 $6.4$、橙子 $9.2$、西瓜 $3.8$。现将单价不少于 $8$ 元的水果名称收集起来构成集合 $S$，则下列关系正确的是","en":"A table lists fruit prices in yuan per kilogram: apples $8.5$, bananas $6.4$, oranges $9.2$, watermelons $3.8$. The names of fruits that cost at least $8$ yuan form a set $S$. Which relation is correct?"},"options":{"A":"$\\{\\text{bananas}\\} \\in S$","B":"$\\{\\text{apples}, \\text{oranges}\\} \\subseteq S$","C":"$\\{\\text{watermelons}\\} \\subseteq S$","D":"$\\text{oranges} \\subseteq S$"}},{"id":"x01-031","q":{"zh":"某公司用两种考试筛选员工：$60$ 人参加了甲考试，$45$ 人参加了乙考试，两种考试都参加的有 $25$ 人。至少参加一种考试的人数与只参加甲考试的人数分别是","en":"A company screens staff with two tests: $60$ people took test A, $45$ took test B, and $25$ took both. How many took at least one test, and how many took only test A?"},"options":{"A":{"zh":"$80$ 人，$35$ 人","en":"$80$ and $35$"},"B":{"zh":"$80$ 人，$20$ 人","en":"$80$ and $20$"},"C":{"zh":"$105$ 人，$35$ 人","en":"$105$ and $35$"},"D":{"zh":"$55$ 人，$35$ 人","en":"$55$ and $35$"}}},{"id":"x01-021","q":{"zh":"已知 $A = \\{x \\in \\mathbb{Z} \\mid -2 \\leqslant x \\leqslant 2\\}$，$B = \\{x \\mid x = a^2,\\ a \\in A\\}$，则 $B$ 中元素的个数为","en":"Let $A = \\{x \\in \\mathbb{Z} \\mid -2 \\leqslant x \\leqslant 2\\}$ and $B = \\{x \\mid x = a^2,\\ a \\in A\\}$. How many elements does $B$ have?"},"options":{"A":"$5$","B":"$4$","C":"$9$","D":"$3$"}},{"id":"x01-088","q":{"zh":"某班 $48$ 名学生中，会游泳的有 $30$ 人，会滑冰的有 $18$ 人，两项都会的有 $12$ 人。两项都不会的有多少人？","en":"In a class of $48$, $30$ can swim, $18$ can skate and $12$ can do both. How many can do neither?"},"options":{"A":"$5$","B":"$9$","C":"$15$","D":"$12$"}},{"id":"m1s-014","q":{"zh":"\"$x > 2$\" 是 \"$x > 1$\" 的","en":"\"$x > 2$\" is what kind of condition for \"$x > 1$\"?"},"options":{"A":{"zh":"充分不必要条件","en":"Sufficient but not necessary condition"},"B":{"zh":"必要不充分条件","en":"Necessary but not sufficient condition"},"C":{"zh":"充要条件","en":"Necessary and sufficient condition"},"D":{"zh":"既不充分也不必要条件","en":"Neither sufficient nor necessary condition"}}},{"id":"m1-031","q":{"zh":"下列集合中为空集的是","en":"Which of the following is the empty set?"},"options":{"A":"$\\{x \\mid x^2 + 1 = 0, x \\in \\mathbb{R}\\}$","B":"$\\{0\\}$","C":"$\\{x \\mid x > 0\\}$","D":"$\\{\\varnothing\\}$"}},{"id":"x01-047","q":{"zh":"已知集合 $A = \\{x \\mid x = 2k + 1, k \\in \\mathbb{Z}\\}$，$B = \\{x \\mid x = 2m - 1, m \\in \\mathbb{Z}\\}$，则 $A$ 与 $B$ 的关系是","en":"Given $A = \\{x \\mid x = 2k + 1, k \\in \\mathbb{Z}\\}$ and $B = \\{x \\mid x = 2m - 1, m \\in \\mathbb{Z}\\}$, what is the relation between $A$ and $B$?"},"options":{"A":"$A \\subsetneqq B$","B":"$B \\subsetneqq A$","C":"$A \\cap B = \\varnothing$","D":"$A = B$"}},{"id":"x01-053","q":{"zh":"若集合 $M$ 满足 $\\{1, 2\\} \\subseteq M \\subseteq \\{1, 2, 3, 4\\}$，则这样的集合 $M$ 共有","en":"If a set $M$ satisfies $\\{1, 2\\} \\subseteq M \\subseteq \\{1, 2, 3, 4\\}$, how many such sets $M$ are there?"},"options":{"A":"$2$","B":"$3$","C":"$4$","D":"$8$"}},{"id":"m1-036","q":{"zh":"区间 $(-\\infty, 3] \\cap (0, +\\infty)$ 的结果是","en":"$(-\\infty, 3] \\cap (0, +\\infty) =$"},"options":{"A":"$(0, 3]$","B":"$[0, 3]$","C":"$(0, 3)$","D":"$(-\\infty, 0]$"}},{"id":"m1s-004","q":{"zh":"设全集 $U = \\{1, 2, 3, 4, 5, 6, 7, 8\\}$，$A = \\{1, 2, 3\\}$，$B = \\{3, 4, 5\\}$，则 $(\\complement_U A) \\cap B =$","en":"Let $U = \\{1, 2, 3, 4, 5, 6, 7, 8\\}$, $A = \\{1, 2, 3\\}$, $B = \\{3, 4, 5\\}$. Then $(\\complement_U A) \\cap B =$"},"options":{"A":"$\\{3, 4, 5\\}$","B":"$\\{4, 5\\}$","C":"$\\{4, 5, 6, 7, 8\\}$","D":"$\\{3\\}$"}},{"id":"m1-005","q":{"zh":"某班有 $40$ 人，喜欢数学的有 $25$ 人，喜欢物理的有 $20$ 人，两门都喜欢的有 $10$ 人。两门都不喜欢的有多少人？","en":"In a class of $40$, $25$ like math, $20$ like physics, and $10$ like both. How many like neither?"},"options":{"A":"5","B":"10","C":"15","D":"25"}},{"id":"x01-037","q":{"zh":"已知 $A = \\{x \\in \\mathbb{Z} \\mid -2 \u003c x \u003c 2\\}$，$B = \\{x \\in \\mathbb{Z} \\mid -1 \\leqslant x \\leqslant 3\\}$，则 $A \\cap B =$","en":"Given $A = \\{x \\in \\mathbb{Z} \\mid -2 \u003c x \u003c 2\\}$ and $B = \\{x \\in \\mathbb{Z} \\mid -1 \\leqslant x \\leqslant 3\\}$, find $A \\cap B$."},"options":{"A":"$\\{-1, 0, 1, 2\\}$","B":"$\\{-1, 0, 1\\}$","C":"$\\{-2, -1, 0, 1, 2\\}$","D":"$(-1, 2)$"}},{"id":"x01-067","q":{"zh":"已知 $A = \\{x \\mid x \\text{ 是 } 12 \\text{ 的正因数}\\}$，$B = \\{x \\in \\mathbb{Z}^+ \\mid x \\leqslant 4\\}$，则 $A \\cap B$ 的子集个数是","en":"Let $A$ be the set of positive divisors of $12$ and $B = \\{x \\in \\mathbb{Z}^+ \\mid x \\leqslant 4\\}$. How many subsets does $A \\cap B$ have?"},"options":{"A":"$4$","B":"$8$","C":"$32$","D":"$16$"}},{"id":"m1s-019","q":{"zh":"已知 $A = \\{x \\mid x \u003c 1\\}$，$B = \\{x \\mid x \u003c 2\\}$，则 $A \\cup B =$","en":"Given $A = \\{x \\mid x \u003c 1\\}$, $B = \\{x \\mid x \u003c 2\\}$, then $A \\cup B =$"},"options":{"A":"$(-\\infty, 1)$","B":"$(1, 2)$","C":"$\\mathbb{R}$","D":"$(-\\infty, 2)$"}},{"id":"x01-059","q":{"zh":"设全集 $U = \\mathbb{R}$，$A = (-\\infty, 1]$，$B = (-2, 3)$，则 $\\complement_U(A \\cup B) =$","en":"Let the universal set be $U = \\mathbb{R}$, with $A = (-\\infty, 1]$ and $B = (-2, 3)$. Find $\\complement_U(A \\cup B)$."},"options":{"A":"$(1, 3)$","B":"$[3, +\\infty)$","C":"$(-\\infty, -2) \\cup (3, +\\infty)$","D":"$(-\\infty, -2] \\cup [1, +\\infty)$"}},{"id":"x01-040","q":{"zh":"设 $x = \\sqrt{25}$，$y = \\pi - 3$，$z = \\frac{22}{7}$，则下列判断正确的是","en":"Let $x = \\sqrt{25}$, $y = \\pi - 3$ and $z = \\frac{22}{7}$. Which judgment is correct?"},"options":{"A":{"zh":"$x \\in \\mathbb{N}$，$y \\in \\mathbb{Q}$，$z \\in \\mathbb{Q}$","en":"$x \\in \\mathbb{N}$, $y \\in \\mathbb{Q}$, $z \\in \\mathbb{Q}$"},"B":{"zh":"$x \\in \\mathbb{Z}$ 且 $x \\notin \\mathbb{N}$","en":"$x \\in \\mathbb{Z}$ and $x \\notin \\mathbb{N}$"},"C":{"zh":"$y \\in \\mathbb{Q}$ 且 $z \\notin \\mathbb{Q}$","en":"$y \\in \\mathbb{Q}$ and $z \\notin \\mathbb{Q}$"},"D":{"zh":"$x \\in \\mathbb{Q}$，$y \\notin \\mathbb{Q}$，$z \\in \\mathbb{Q}$","en":"$x \\in \\mathbb{Q}$, $y \\notin \\mathbb{Q}$, $z \\in \\mathbb{Q}$"}}},{"id":"x01-052","q":{"zh":"某社团共 $40$ 人，每人至少从绘画、书法、围棋三项活动中选择一项。已知会绘画的有 $22$ 人，会书法的有 $18$ 人，会围棋的有 $16$ 人，至少会两项的有 $20$ 人。则三项都会的有","en":"In a club of $40$ members, everyone takes at least one of painting, calligraphy and go. There are $22$ painters, $18$ calligraphers and $16$ go players, and $20$ members take at least two of the three. How many take all three?"},"options":{"A":"$2$","B":"$4$","C":"$8$","D":"$10$"}},{"id":"m1-017","q":{"zh":"已知 $A = [-5, 2)$，$B = [-4, 2]$，则 $A \\cap B =$","en":"Given $A = [-5, 2)$, $B = [-4, 2]$, then $A \\cap B =$"},"options":{"A":"$[-5, 2]$","B":"$[-4, 2)$","C":"$[-4, 2]$","D":"$[-5, -4]$"}},{"id":"m1-033","q":{"zh":"已知 $A = (0, 5]$，$B = [2, 7)$，则 $A \\cup B =$","en":"Given $A = (0, 5]$, $B = [2, 7)$, then $A \\cup B =$"},"options":{"A":"$(0, 7)$","B":"$[2, 5]$","C":"$(0, 2]$","D":"$[5, 7)$"}},{"id":"x02-040","q":{"zh":"如图，二次函数 $y = ax^2 + bx + c$ 的图像开口向上，与 $x$ 轴交于 $(-1, 0)$ 和 $(3, 0)$ 两点。则不等式 $ax^2 + bx + c \u003c 0$ 的解集是","en":"The graph of $y=ax^2+bx+c$ opens upward and crosses the $x$-axis at $(-1,0)$ and $(3,0)$. The solution set of $ax^2+bx+c\u003c0$ is"},"options":{"A":"$(-\\infty, -1) \\cup (3, +\\infty)$","B":"$-1 \\leqslant x \\leqslant 3$","C":"$\\mathbb{R}$","D":"$(-1, 3)$"}},{"id":"x02-002","q":{"zh":"若 $x \u003c -3$，则 $\\frac{x}{3}$ 与 $-1$ 的大小关系是","en":"If $x \u003c -3$, how does $\\frac{x}{3}$ compare with $-1$?"},"options":{"A":"$\\frac{x}{3} > -1$","B":"$\\frac{x}{3} \u003c -1$","C":"$\\frac{x}{3} = -1$","D":{"zh":"大小关系不确定，取决于 $x$ 的具体取值","en":"Not determined; it depends on the particular value of $x$"}}},{"id":"x02-056","q":{"zh":"不等式 $|x + 1| \\leqslant 3$ 的解集是","en":"The solution set of $|x + 1| \\leqslant 3$ is"},"options":{"A":"$(-4, 2)$","B":"$-4 \\leqslant x \\leqslant 2$","C":"$(-\\infty, -4] \\cup [2, +\\infty)$","D":"$(-1, 3)$"}},{"id":"m1-059","q":{"zh":"不等式 $x^3 - x > 0$ 的解集是","en":"The solution of $x^3 - x > 0$ is"},"options":{"A":"$(-1, 0) \\cup (1, \\infty)$","B":"$(-\\infty, -1) \\cup (0, 1)$","C":"$(0, \\infty)$","D":"$(-\\infty, 0)$"}},{"id":"x02-004","q":{"zh":"已知 $a \u003c b$，则下列不等式一定成立的是","en":"If $a \u003c b$, which inequality must hold?"},"options":{"A":"$\\frac{1}{a} \u003c \\frac{1}{b}$","B":"$a^2 \u003c b^2$","C":"$-2a \u003c -2b$","D":"$a - 3 \u003c b - 3$"}},{"id":"m1-044","q":{"zh":"不等式 $x^2 - 4 \u003c 0$ 的解集是","en":"The solution of $x^2 - 4 \u003c 0$ is"},"options":{"A":"$(-\\infty, -2) \\cup (2, \\infty)$","B":"$(-2, 2)$","C":"$(-\\infty, 2)$","D":"$(2, \\infty)$"}},{"id":"x02-086","q":{"zh":"若 $0 \u003c x \u003c 1$，下列说法错误的是","en":"If $0 \u003c x \u003c 1$, which of the following statements is false?"},"options":{"A":"$x^2 \u003c x$","B":"$\\frac{1}{x} > 1$","C":"$x \u003c 1$","D":"$x^2 > x$"}},{"id":"m1s-034","q":{"zh":"若不等式 $|x - a| \u003c 2$ 的解集为 $(1, 5)$，则实数 $a =$","en":"If the solution set of $|x - a| \u003c 2$ is $(1, 5)$, then $a =$"},"options":{"A":"$2$","B":"$4$","C":"$3$","D":"$5$"}},{"id":"x02-001","q":{"zh":"在数轴的三个标记点中，点 $A$ 对应 $2$，点 $B$ 对应 $2.6$，点 $C$ 对应 $3$。满足不等式 $x > 3$ 的标记点共有","en":"On a number line, point $A$ marks $2$, point $B$ marks $2.6$, and point $C$ marks $3$. How many of these marked points satisfy $x > 3$?"},"options":{"A":{"zh":"$0$ 个","en":"None of them"},"B":{"zh":"$1$ 个","en":"Exactly one"},"C":{"zh":"$2$ 个","en":"Exactly two"},"D":{"zh":"$3$ 个","en":"All three"}}},{"id":"x02-054","q":{"zh":"不等式组 $\\begin{cases} x + 2 \\geqslant 0 \\\\ 2x - 1 \\leqslant 5 \\end{cases}$ 的解集是","en":"The solution set of the system $\\begin{cases} x + 2 \\geqslant 0 \\\\ 2x - 1 \\leqslant 5 \\end{cases}$ is"},"options":{"A":"$[-2, 3]$","B":"$(-\\infty, -2] \\cup [3, +\\infty)$","C":"$-2 \u003c x \u003c 3$","D":"$[3, +\\infty)$"}},{"id":"x02-027","q":{"zh":"若不等式 $\\frac{ax + 2}{x - 4} \\leqslant 0$ 的解集为 $\\left[-2, 4\\right)$，则实数 $a$ 的值为","en":"The solution set of $\\frac{ax + 2}{x - 4} \\leqslant 0$ is $[-2, 4)$. What is the value of the real number $a$?"},"options":{"A":"$-1$","B":"$1$","C":"$-\\frac{1}{2}$","D":"$2$"}},{"id":"m1-054","q":{"zh":"若不等式 $x^2 + kx + 1 > 0$ 对一切 $x \\in \\mathbb{R}$ 恒成立，则 $k$ 的取值范围是","en":"If $x^2 + kx + 1 > 0$ for all $x \\in \\mathbb{R}$, the range of $k$ is"},"options":{"A":"$(-\\infty, -2) \\cup (2, \\infty)$","B":"$(-2, 2)$","C":"$[-2, 2]$","D":"$(-\\infty, \\infty)$"}},{"id":"m1s-035","q":{"zh":"若不等式 $|x - 3| + |x + 1| \\geqslant a$ 对任意实数 $x$ 恒成立，则 $a$ 的取值范围是","en":"If $|x - 3| + |x + 1| \\geqslant a$ holds for all real $x$, the range of $a$ is"},"options":{"A":"$a \\leqslant 4$","B":"$a \u003c 4$","C":"$a \\geqslant 4$","D":"$a \\leqslant 2$"}},{"id":"m1-012","q":{"zh":"不等式 $\\frac{x-1}{x+2} > 0$ 的解集是","en":"The solution set of $\\frac{x-1}{x+2} > 0$ is"},"options":{"A":"$(-2, 1]$","B":"$(-2, 1)$","C":"$(-\\infty, -2) \\cup [1, \\infty)$","D":"$(-\\infty, -2) \\cup (1, \\infty)$"}},{"id":"x02-087","q":{"zh":"同时满足 $|x| \\leqslant 2$ 且 $\\frac{x-1}{x+2} > 0$ 的 $x$ 的取值范围是","en":"The range of $x$ satisfying both $|x| \\leqslant 2$ and $\\frac{x-1}{x+2} > 0$ is"},"options":{"A":"$(1, 2]$","B":"$[-2, 1)$","C":"$(-2, 2)$","D":"$(1, 3)$"}},{"id":"m1s-037","q":{"zh":"已知 $x > 1$，则 $x + \\frac{1}{x-1}$ 的最小值是","en":"For $x > 1$, the minimum value of $x + \\frac{1}{x-1}$ is"},"options":{"A":"$1$","B":"$2$","C":"$3$","D":"$4$"}},{"id":"m1-027","q":{"zh":"不等式 $x^2 - 5x + 6 \\geqslant 0$ 的解集是","en":"The solution set of $x^2 - 5x + 6 \\geqslant 0$ is"},"options":{"A":"$[2, 3]$","B":"$(-\\infty, 2] \\cup [3, \\infty)$","C":"$(-\\infty, 2) \\cup (3, \\infty)$","D":"$(2, 3)$"}},{"id":"m1-048","q":{"zh":"不等式 $\\frac{x+3}{x-1} \\leqslant 0$ 的解集是","en":"The solution of $\\frac{x+3}{x-1} \\leqslant 0$ is"},"options":{"A":"$[-3, 1)$","B":"$(-3, 1]$","C":"$[-3, 1]$","D":"$(-\\infty, -3] \\cup (1, \\infty)$"}},{"id":"x02-053","q":{"zh":"解不等式 $1 - 2x \\geqslant 7$，其解集是","en":"Solve $1 - 2x \\geqslant 7$. Its solution set is"},"options":{"A":"$[-3, +\\infty)$","B":"$(-\\infty, 3]$","C":"$(-\\infty, -3]$","D":"$[-7, +\\infty)$"}},{"id":"m1s-046","q":{"zh":"设 $x, y$ 满足 $\\begin{cases} x + y \\geqslant 2 \\\\ x \\geqslant 0 \\\\ y \\geqslant 0 \\end{cases}$，则 $z = x + 2y$ 的最小值是","en":"If $x, y$ satisfy $\\begin{cases} x + y \\geqslant 2 \\\\ x \\geqslant 0 \\\\ y \\geqslant 0 \\end{cases}$, the minimum of $z = x + 2y$ is"},"options":{"A":"$2$","B":"$0$","C":"$4$","D":"$6$"}},{"id":"x02-023","q":{"zh":"关于 $x$ 的不等式 $x^2 - (m^2 + m)x + m^3 \u003c 0$ 的解集是","en":"What is the solution set of $x^2 - (m^2 + m)x + m^3 \u003c 0$ in $x$?"},"options":{"A":"$(m^2, m)$","B":"$(m, m^2)$","C":"$(-\\infty, m) \\cup (m^2, +\\infty)$","D":{"zh":"以上都不对，因为解集取决于 $m$ 与 $1$ 的大小","en":"None of these, because the set depends on how $m$ compares with 1"}}},{"id":"x02-079","q":{"zh":"若不等式 $(a-1)x^2 + 2x + 1 > 0$ 对一切 $x \\in \\mathbb{R}$ 恒成立，则 $a$ 的取值范围是","en":"If $(a-1)x^2 + 2x + 1 > 0$ holds for all $x \\in \\mathbb{R}$, then the range of $a$ is"},"options":{"A":"$(2, +\\infty)$","B":"$[1, +\\infty)$","C":"$(0, +\\infty)$","D":"$[3, +\\infty)$"}},{"id":"m1-028","q":{"zh":"不等式 $x^2 + 2x + 3 > 0$ 的解集是","en":"The solution set of $x^2 + 2x + 3 > 0$ is"},"options":{"A":"$\\varnothing$","B":"$\\mathbb{R}$","C":"$(-1, 3)$","D":"$(-\\infty, -1) \\cup (3, \\infty)$"}},{"id":"x02-074","q":{"zh":"不等式 $\\frac{x}{x-2} \u003c 0$ 的解集是","en":"The solution set of $\\frac{x}{x-2} \u003c 0$ is"},"options":{"A":"$(-\\infty, -1)\\cup(2, +\\infty)$","B":"$(-\\infty, 0]\\cup[3, +\\infty)$","C":"$[-1, 2]$","D":"$(0, 2)$"}},{"id":"x02-026","q":{"zh":"不等式 $|x + 1| + |x - 3| \\leqslant 4$ 的整数解共有","en":"How many integer solutions does $|x + 1| + |x - 3| \\leqslant 4$ have?"},"options":{"A":{"zh":"$3$ 个","en":"3"},"B":{"zh":"$4$ 个","en":"4"},"C":{"zh":"$5$ 个","en":"5"},"D":{"zh":"$7$ 个","en":"7"}}},{"id":"x02-005","q":{"zh":"某电商平台的包邮规则：订单金额满 $99$ 元包邮，否则收取运费 $10$ 元。设订单商品金额为 $x$ 元（$x \\geqslant 0$），顾客实付总额为 $y$ 元，则 $y$ 与 $x$ 的关系是","en":"An online shop ships free when the order totals at least 99 yuan, and otherwise charges 10 yuan for shipping. Let $x$ be the merchandise total (in yuan, $x \\geqslant 0$) and $y$ the amount actually paid. Which relation holds?"},"options":{"A":{"zh":"始终 $y = x + 10$，因为运费先收后返","en":"$y = x + 10$ always, since shipping is charged and refunded later"},"B":{"zh":"当 $0 \\leqslant x \\leqslant 99$ 时 $y = x + 10$；当 $x > 99$ 时 $y = x$","en":"$y = x + 10$ when $0 \\leqslant x \\leqslant 99$, and $y = x$ when $x > 99$"},"C":{"zh":"当 $0 \\leqslant x \u003c 99$ 时 $y = x + 9$；当 $x \\geqslant 99$ 时 $y = x$","en":"$y = x + 9$ when $0 \\leqslant x \u003c 99$, and $y = x$ when $x \\geqslant 99$"},"D":{"zh":"当 $0 \\leqslant x \u003c 99$ 时 $y = x + 10$；当 $x \\geqslant 99$ 时 $y = x$","en":"$y = x + 10$ when $0 \\leqslant x \u003c 99$, and $y = x$ when $x \\geqslant 99$"}}},{"id":"m1-020","q":{"zh":"不等式组 $\\begin{cases} 2x - 1 > 3 \\\\ x + 2 \u003c 6 \\end{cases}$ 的解集是","en":"The solution of $\\begin{cases} 2x - 1 > 3 \\\\ x + 2 \u003c 6 \\end{cases}$ is"},"options":{"A":"$(-\\infty, 4)$","B":"$(4, \\infty)$","C":"$(2, \\infty)$","D":"$(2, 4)$"}},{"id":"x02-043","q":{"zh":"不等式 $\\frac{3x+1}{x-2} \\leqslant 0$ 的解集是","en":"The solution set of $\\frac{3x+1}{x-2} \\leqslant 0$ is"},"options":{"A":"$(-\\infty, -\\frac{1}{3}] \\cup (2, +\\infty)$","B":"$[-\\frac{1}{3}, 2]$","C":"$-\\frac{1}{3} \\leqslant x \u003c 2$","D":{"zh":"$x \u003c -\\frac{1}{3}$ 或 $x > 2$","en":"$x \u003c -\\frac{1}{3}$ or $x > 2$"}}},{"id":"m1-046","q":{"zh":"不等式 $-x^2 + 3x + 4 > 0$ 的解集是","en":"The solution of $-x^2 + 3x + 4 > 0$ is"},"options":{"A":"$(-4, 1)$","B":"$(-\\infty, -1) \\cup (4, \\infty)$","C":"$(-1, 4)$","D":"$(-\\infty, 1) \\cup (4, \\infty)$"}},{"id":"x02-060","q":{"zh":"解不等式 $|2x-1| \\leqslant 3$，其解集是","en":"Solve $|2x-1| \\leqslant 3$. Its solution set is"},"options":{"A":"$(-1, 3)$","B":"$[-1, 2]$","C":"$(-\\infty, -1]\\cup[2, +\\infty)$","D":"$[-2, 1]$"}},{"id":"m1-024","q":{"zh":"不等式 $3 - x \\geqslant 2x + 6$ 的解集是","en":"The solution set of $3 - x \\geqslant 2x + 6$ is"},"options":{"A":"$x \\geqslant 1$","B":"$x \\leqslant -1$","C":"$x \\geqslant -1$","D":"$x \\leqslant 1$"}},{"id":"x02-014","q":{"zh":"已知不等式 $x^2 + ax + b \u003c 0$ 的解集为 $\\{x \\mid 4 \u003c x \u003c 6\\}$，则 $a$ 与 $b$ 的值分别为","en":"The solution set of $x^2 + ax + b \u003c 0$ is $\\{x \\mid 4 \u003c x \u003c 6\\}$. What are $a$ and $b$?"},"options":{"A":"$a = 10$，$b = 24$","B":"$a = -10$，$b = 24$","C":"$a = 10$，$b = -24$","D":"$a = -10$，$b = -24$"}},{"id":"x02-017","q":{"zh":"不等式 $\\frac{x+2}{x-3} \\leqslant 0$ 的解集是","en":"What is the solution set of $\\frac{x+2}{x-3} \\leqslant 0$?"},"options":{"A":"$[-2, 3)$","B":"$(-\\infty, -2]$","C":"$[3, +\\infty)$","D":"$[-2, +\\infty)$"}},{"id":"x02-049","q":{"zh":"不等式 $\\frac{x}{x-4} \\geqslant 0$ 的解集是","en":"The solution set of $\\frac{x}{x-4} \\geqslant 0$ is"},"options":{"A":"$[0, 4)$","B":"$0 \\leqslant x \\leqslant 4$","C":"$(-\\infty, 0] \\cup (4, +\\infty)$","D":{"zh":"$x \u003c 0$ 或 $x > 4$","en":"$x \u003c 0$ or $x > 4$"}}},{"id":"m1-058","q":{"zh":"不等式 $\\frac{x^2 - x - 2}{x^2 + x + 1} \u003c 0$ 的解集是","en":"The solution of $\\frac{x^2 - x - 2}{x^2 + x + 1} \u003c 0$ is"},"options":{"A":"$(-1, 2)$","B":"$(-\\infty, -1) \\cup (2, \\infty)$","C":"$(-2, 1)$","D":"$\\mathbb{R}$"}},{"id":"m1-057","q":{"zh":"不等式 $3x - 2y + 6 > 0$ 表示的平面区域是","en":"The region represented by $3x - 2y + 6 > 0$ is"},"options":{"A":{"zh":"直线 $3x-2y+6=0$ 上方","en":"Above the line $3x-2y+6=0$"},"B":{"zh":"直线 $3x-2y+6=0$ 下方","en":"Below the line $3x-2y+6=0$"},"C":{"zh":"直线 $3x-2y+6=0$ 左方","en":"To the left of the line $3x-2y+6=0$"},"D":{"zh":"整个平面","en":"The entire plane"}}},{"id":"x02-083","q":{"zh":"不等式 $|x-2| \\geqslant |x+1|$ 的解集是","en":"The solution set of $|x-2| \\geqslant |x+1|$ is"},"options":{"A":"$(-\\infty, \\frac{1}{2}]$","B":"$(\\frac{1}{2}, +\\infty)$","C":"$\\{\\frac{1}{2}\\}$","D":"$\\mathbb{R}$"}},{"id":"m1-047","q":{"zh":"不等式 $\\frac{1}{x} > 0$ 的解集是","en":"The solution of $\\frac{1}{x} > 0$ is"},"options":{"A":"$x > 0$","B":"$x \u003c 0$","C":"$x \\neq 0$","D":"$x > 1$"}},{"id":"m1s-043","q":{"zh":"若不等式 $mx^2 + mx + 1 > 0$ 对一切 $x \\in \\mathbb{R}$ 恒成立，则 $m$ 的取值范围是","en":"If $mx^2 + mx + 1 > 0$ holds for all $x \\in \\mathbb{R}$, the range of $m$ is"},"options":{"A":"$[0, 4)$","B":"$(0, 4)$","C":"$[0, 4]$","D":"$(-\\infty, 4)$"}},{"id":"x02-064","q":{"zh":"某班计划用不超过 $200$ 元购买单价 $15$ 元的笔记本和单价 $10$ 元的笔，已知买了 $8$ 本笔记本，则笔最多可买多少支？","en":"A class plans to spend no more than 200 yuan on notebooks (15 yuan each) and pens (10 yuan each). They bought 8 notebooks. At most how many pens can they buy?"},"options":{"A":{"zh":"6 支","en":"6 pens"},"B":{"zh":"8 支","en":"8 pens"},"C":{"zh":"7 支","en":"7 pens"},"D":{"zh":"9 支","en":"9 pens"}}},{"id":"x02-051","q":{"zh":"不等式 $\\frac{(x-1)(x-3)}{x+2} > 0$ 的解集是","en":"The solution set of $\\frac{(x-1)(x-3)}{x+2} > 0$ is"},"options":{"A":"$(-\\infty, -2) \\cup (1, 3)$","B":"$(-2, 1) \\cup (1, 3)$","C":"$(-\\infty, -2) \\cup (3, +\\infty)$","D":"$(-2, 1) \\cup (3, +\\infty)$"}}]};
+  var KEY = 'csca-exam-' + DATA.slug;
+  var state = { answers: {}, name: '', sid: '', startedAt: Date.now(), submittedAt: 0, locked: false, lang: 'zh' };
+  var saveTimer = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        state = Object.assign(state, s);
+      }
+    } catch (e) {}
+    if (!state.startedAt) state.startedAt = Date.now();
+  }
+  function persist() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }, 150);
+  }
+  function fmt(sec) {
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function txt(v) { return typeof v === 'string' ? v : (v[state.lang] || v.zh || v.en || ''); }
+  function renderMath(root) {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(root, { delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ], throwOnError: false });
+    }
+  }
+
+  function render() {
+    document.getElementById('title').textContent = DATA.title;
+    document.getElementById('subtitle').textContent = DATA.subtitle || '';
+    document.getElementById('instructions').textContent = DATA.instructions || '';
+    document.getElementById('count').textContent = String(DATA.questions.length);
+    if (DATA.durationMinutes) {
+      document.getElementById('limit').textContent = DATA.durationMinutes + ' 分钟';
+    } else {
+      document.getElementById('limitWrap').style.display = 'none';
+    }
+
+    var host = document.getElementById('paper');
+    host.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var box = document.createElement('section');
+      box.className = 'q';
+      var h = document.createElement('h3');
+      h.textContent = (i + 1) + '.';
+      box.appendChild(h);
+      var stem = document.createElement('div');
+      stem.textContent = txt(q.q);
+      box.appendChild(stem);
+      ['A', 'B', 'C', 'D'].forEach(function (K) {
+        if (!q.options[K]) return;
+        var row = document.createElement('div');
+        row.className = 'opt' + (state.answers[q.id] === K ? ' on' : '');
+        row.setAttribute('data-q', q.id);
+        row.setAttribute('data-k', K);
+        var k = document.createElement('span'); k.className = 'k'; k.textContent = K + '.';
+        var v = document.createElement('span'); v.textContent = txt(q.options[K]);
+        row.appendChild(k); row.appendChild(v);
+        row.addEventListener('click', function () {
+          if (state.locked) return;
+          state.answers[q.id] = (state.answers[q.id] === K ? null : K);
+          persist();
+          render();
+        });
+        box.appendChild(row);
+      });
+      host.appendChild(box);
+    });
+    renderMath(host);
+    document.getElementById('sName').value = state.name || '';
+    document.getElementById('sId').value = state.sid || '';
+  }
+
+  function tick() {
+    if (!DATA.durationMinutes) { document.getElementById('timer').textContent = fmt((Date.now() - state.startedAt) / 1000); return; }
+    var left = DATA.durationMinutes * 60 - (Date.now() - state.startedAt) / 1000;
+    var el = document.getElementById('timer');
+    el.textContent = fmt(left);
+    if (left <= 300) el.classList.add('warn');
+    if (left <= 0 && !state.locked) {
+      state.locked = true; state.submittedAt = Date.now(); persist();
+      var done = document.getElementById('done');
+      done.style.display = 'block';
+      done.textContent = '时间到，答案已锁定。请点击“导出答案”交给老师。';
+    }
+  }
+
+  document.getElementById('sName').addEventListener('input', function (e) { state.name = e.target.value; persist(); });
+  document.getElementById('sId').addEventListener('input', function (e) { state.sid = e.target.value; persist(); });
+
+  document.getElementById('btnClear').addEventListener('click', function () {
+    if (!confirm('确定清空所有已选答案？')) return;
+    state.answers = {}; state.locked = false; state.submittedAt = 0;
+    persist(); render();
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+
+  document.getElementById('btnExport').addEventListener('click', function () {
+    var out = {
+      paperId: DATA.paperId,
+      slug: DATA.slug,
+      student: { name: state.name || '', id: state.sid || '' },
+      answers: DATA.questions.map(function (q) { return { problemId: q.id, selected: state.answers[q.id] || null }; }),
+      startedAt: state.startedAt,
+      submittedAt: state.submittedAt || Date.now(),
+      durationSeconds: Math.round(((state.submittedAt || Date.now()) - state.startedAt) / 1000)
+    };
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'answers-' + DATA.slug + '-' + (state.name || 'student') + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('btnImport').addEventListener('click', function () { document.getElementById('fileInput').click(); });
+  document.getElementById('fileInput').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var obj = JSON.parse(String(reader.result));
+        if (obj.paperId && obj.paperId !== DATA.paperId) {
+          if (!confirm('这份答案属于另一份试卷，仍要导入吗？')) return;
+        }
+        var map = {};
+        (obj.answers || []).forEach(function (a) { if (a.selected) map[a.problemId] = a.selected; });
+        state.answers = map;
+        if (obj.student) { state.name = obj.student.name || state.name; state.sid = obj.student.id || state.sid; }
+        persist(); render();
+      } catch (err) { alert('文件格式不正确'); }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  });
+
+  document.getElementById('btnLang').addEventListener('click', function () {
+    state.lang = state.lang === 'zh' ? 'en' : 'zh';
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    persist(); render();
+  });
+
+  function boot() {
+    load();
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    if (DATA.passcode) {
+      var gate = document.getElementById('gate');
+      gate.hidden = false;
+      document.getElementById('gateBtn').addEventListener('click', function () {
+        if (document.getElementById('gateInput').value === DATA.passcode) {
+          gate.hidden = true;
+        } else {
+          document.getElementById('gateErr').textContent = '口令不正确';
+        }
+      });
+    }
+    render();
+    tick();
+    setInterval(tick, 1000);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>CSCA 数学练习261028</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<style>
+  :root { --ink:#1f2328; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bg:#f8fafc; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font: 16px/1.7 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+  header.paper { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px 24px; }
+  h1 { font-size: 22px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:12px; }
+  .meta { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:14px; }
+  .meta b { color:var(--ink); }
+  .bar { position:sticky; top:0; z-index:20; display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:rgba(248,250,252,.95); backdrop-filter:blur(6px); padding:12px 0; border-bottom:1px solid var(--line); margin:16px 0 8px; }
+  .timer { font-variant-numeric: tabular-nums; font-weight:700; font-size:18px; margin-right:auto; }
+  .timer.warn { color:#b91c1c; }
+  button { font: inherit; cursor:pointer; border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 12px; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.ghost { background:transparent; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .student { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+  .student input { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; min-width:180px; }
+  .q { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0; }
+  .q h3 { margin:0 0 10px; font-size:16px; font-weight:600; }
+  .opt { display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:10px; cursor:pointer; }
+  .opt:hover { background:#f1f5f9; }
+  .opt.on { background:#eff6ff; outline:1px solid #bfdbfe; }
+  .opt .k { font-weight:700; width:22px; flex:none; }
+  .foot { color:var(--muted); font-size:13px; margin-top:26px; }
+  .gate { position:fixed; inset:0; background:#fff; z-index:50; display:flex; align-items:center; justify-content:center; }
+  .gate .box { width:min(92vw,360px); border:1px solid var(--line); border-radius:14px; padding:22px; text-align:center; }
+  .gate input { width:100%; padding:10px; margin:12px 0; border:1px solid var(--line); border-radius:9px; font:inherit; }
+  .err { color:#b91c1c; font-size:14px; min-height:20px; }
+  .done { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:14px 16px; margin:16px 0; display:none; }
+  .result { display:none; background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0; }
+  .result.show { display:block; }
+  .result h2 { margin:0 0 6px; font-size:18px; }
+  .result-score { font-size:30px; font-weight:800; line-height:1.2; }
+  .result-score small { font-size:15px; font-weight:600; color:var(--muted); }
+  .result-meta { color:var(--muted); font-size:14px; margin-top:4px; }
+  .result-hint { color:var(--muted); font-size:12px; margin-top:8px; }
+  .opt.correct { background:#ecfdf5; outline:1px solid #86efac; }
+  .opt.wrong { background:#fef2f2; outline:1px solid #fca5a5; }
+  .badge { margin-left:auto; flex:none; border:1px solid currentColor; border-radius:6px; padding:0 6px; font-size:11px; line-height:18px; }
+  .badge.ok { color:#047857; }
+  .badge.bad { color:#b91c1c; }
+  .explain { margin-top:10px; border-top:1px dashed var(--line); padding-top:8px; font-size:14px; color:#374151; }
+  .explain summary { cursor:pointer; color:var(--muted); font-size:13px; }
+  .q.ok { border-left:4px solid #34d399; }
+  .q.bad { border-left:4px solid #f87171; }
+  /* floating progress panel */
+  .panel { position:fixed; right:16px; bottom:16px; z-index:30; width:216px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 28px rgba(15,23,42,.14); font-size:13px; }
+  .panel-head { display:flex; align-items:center; gap:8px; padding:9px 10px 9px 12px; border-bottom:1px solid var(--line); }
+  .panel-title { font-weight:700; color:#334155; }
+  .panel-timer { margin-left:auto; font-variant-numeric:tabular-nums; font-weight:700; font-size:15px; color:#0f172a; }
+  .panel-timer.warn { color:#b91c1c; }
+  .panel-toggle { border:none; background:transparent; padding:0 2px; font-size:14px; line-height:1; color:#64748b; }
+  .panel-body { padding:10px 12px 12px; }
+  .panel-stats { display:flex; justify-content:space-between; color:#475569; margin-bottom:7px; }
+  .panel-stats b { color:#0f172a; }
+  .panel-bar { height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:9px; }
+  .panel-bar i { display:block; height:100%; width:0; background:#2563eb; border-radius:999px; transition:width .2s ease; }
+  .panel-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; max-height:132px; overflow:auto; }
+  .panel-grid button { padding:0; height:24px; font-size:11px; border-radius:6px; border:1px solid #e2e8f0; background:#fff; color:#64748b; }
+  .panel-grid button.ans { background:#dbeafe; border-color:#bfdbfe; color:#1d4ed8; font-weight:700; }
+  .panel-next { width:100%; margin-top:9px; padding:6px 8px; font-size:12px; }
+  .panel.collapsed { width:auto; }
+  .panel.collapsed .panel-body { display:none; }
+  .panel.collapsed .panel-head { border-bottom:none; }
+  .q.flash { outline:3px solid #93c5fd; outline-offset:3px; }
+  .print-head { display:none; }
+  @media (max-width:640px) { .panel { right:10px; bottom:10px; width:196px; } .panel-grid { grid-template-columns:repeat(5,1fr); } }
+  @media print {
+    @page { size:A4; margin:9mm 9mm 10mm; }
+    body { background:#fff; font-size:10.5pt; line-height:1.32; }
+    .bar, .student, .foot, .gate, .done, .panel, button, input { display:none !important; }
+    .result.show { display:block !important; margin:0 0 3mm; padding:2mm 2.5mm; border:1px solid #111; border-radius:0; break-inside:avoid; }
+    .result h2 { font-size:12pt; margin:0 0 1mm; }
+    .result-score { font-size:17pt; }
+    .result-meta { font-size:8.5pt; }
+    .result-hint { display:none; }
+    .opt.correct, .opt.wrong { outline:none; background:none; }
+    .opt.correct { border:1px solid #111; }
+    .opt.wrong { border:1px dashed #111; }
+    .badge { font-size:7.5pt; line-height:1.2; padding:0 1mm; border:1px solid #111; color:#111; }
+    .explain { display:block; font-size:8.5pt; border-top:1px dotted #999; margin-top:1mm; padding-top:1mm; }
+    .explain summary { display:none; }
+    .q.ok, .q.bad { border-left:none; }
+    .q { break-inside:auto; page-break-inside:auto; }
+    .wrap { max-width:none; padding:0; margin:0; }
+    header.paper { border:none; border-radius:0; border-bottom:1px solid #111; padding:0 0 2.5mm; margin:0 0 1.5mm; }
+    h1 { font-size:15pt; margin:0 0 .8mm; }
+    .sub { font-size:9pt; margin-bottom:.8mm; }
+    .meta { font-size:8.5pt; gap:8mm; }
+    #instructions { font-size:9pt !important; margin:1mm 0 0 !important; }
+    .print-head { display:block; font-size:9pt; margin-top:2mm; color:#111; }
+    .q { break-inside:avoid; page-break-inside:avoid; border:0; border-radius:0; padding:1.6mm 0 1.2mm; margin:0; background:#fff; }
+    .q + .q { border-top:1px dotted #cbd5e1; }
+    .q h3 { display:inline; font-size:10.5pt; margin:0 1.5mm 0 0; }
+    .q .stem { display:inline; }
+    .opt { padding:.35mm 0; gap:2mm; }
+    .opt:hover { background:none; }
+    .opt .k { width:6mm; }
+    a { color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden>
+  <div class="box">
+    <h3 style="margin:0">需要访问口令</h3>
+    <p class="sub">请输入老师提供的口令</p>
+    <input id="gateInput" type="password" autocomplete="off" />
+    <div class="err" id="gateErr"></div>
+    <button class="primary" id="gateBtn">进入试卷</button>
+  </div>
+</div>
+<div class="wrap">
+  <header class="paper">
+    <h1 id="title"></h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="meta">
+      <span>题数 <b id="count"></b></span>
+      <span id="limitWrap">限时 <b id="limit"></b></span>
+    </div>
+    <p id="instructions" style="margin:12px 0 0;color:#374151"></p>
+    <div class="print-head">姓名：______________　学号：______________　日期：______________</div>
+  </header>
+
+  <div class="student">
+    <input id="sName" placeholder="姓名" autocomplete="off" />
+    <input id="sId" placeholder="学号 / 班级" autocomplete="off" />
+    <button class="ghost" id="btnLang">EN</button>
+  </div>
+
+  <div class="bar">
+    <span class="timer" id="timer">--:--</span>
+    <button id="btnSubmit" class="primary" hidden>提交并批改</button>
+    <button id="btnPrint">打印 / PDF</button>
+    <button id="btnImport">导入答案</button>
+    <button id="btnExport" class="primary">导出答案</button>
+    <button id="btnClear" class="ghost">清空</button>
+    <input id="fileInput" type="file" accept="application/json" hidden />
+  </div>
+
+  <div class="done" id="done"></div>
+  <div class="result" id="result" hidden></div>
+  <div id="paper"></div>
+
+  <aside class="panel" id="panel" aria-label="答题进度">
+    <div class="panel-head">
+      <span class="panel-title">答题进度</span>
+      <span class="panel-timer" id="panelTimer">--:--</span>
+      <button class="panel-toggle" id="panelToggle" title="收起 / 展开">▾</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-stats"><span>已答 <b id="doneCount">0</b></span><span>未答 <b id="todoCount">0</b></span></div>
+      <div class="panel-bar"><i id="panelProgress"></i></div>
+      <div class="panel-grid" id="panelGrid"></div>
+      <button class="panel-next" id="panelNext">跳到第一道未答</button>
+    </div>
+  </aside>
+  <div class="foot">答案会自动保存在本机浏览器中；换设备时请先导出，再在新设备导入。</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+(function () {
+  var DATA = {"slug":"03b9vhbepgp0","paperId":"p_mvrjp47a_zhs16x","title":"CSCA 数学练习261028","subtitle":"","instructions":"本卷为单选题，选出唯一正确答案。","durationMinutes":null,"passcode":"","showResults":false,"questions":[{"id":"m2f-058","q":{"zh":"函数 $f(x) = |x+1| - |x-1|$ 是","en":"The function $f(x) = |x+1| - |x-1|$ is"},"options":{"A":{"zh":"偶函数","en":"Even function"},"B":{"zh":"奇函数","en":"Odd function"},"C":{"zh":"非奇非偶函数","en":"Neither odd nor even"},"D":{"zh":"既是奇函数又是偶函数","en":"Both odd and even"}}},{"id":"x06-065","q":{"zh":"不等式 $\\lg x\u003c0$ 的解集是","en":"Solve the inequality $\\lg x\u003c0$."},"options":{"A":"$x\u003c1$","B":"$0\u003cx\u003c1$","C":"$(-\\infty,1)$","D":"$x>1$"}},{"id":"m2-034","q":{"zh":"等比数列 $1, \\frac{1}{2}, \\frac{1}{4}, \\ldots$ 的无穷项和为","en":"The infinite sum of the GP $1, \\frac{1}{2}, \\frac{1}{4}, \\ldots$ is"},"options":{"A":"1","B":"$\\frac{3}{2}$","C":"2","D":{"zh":"无穷大","en":"Infinity"}}},{"id":"m1s-034","q":{"zh":"若不等式 $|x - a| \u003c 2$ 的解集为 $(1, 5)$，则实数 $a =$","en":"If the solution set of $|x - a| \u003c 2$ is $(1, 5)$, then $a =$"},"options":{"A":"$2$","B":"$4$","C":"$3$","D":"$5$"}},{"id":"m3-199","q":{"zh":"抛物线 $y^2 = -6x$ 的开口方向是","en":"The parabola $y^2 = -6x$ opens to the"},"options":{"A":{"zh":"右","en":"Right"},"B":{"zh":"左","en":"Left"},"C":{"zh":"上","en":"Up"},"D":{"zh":"下","en":"Down"}}},{"id":"x06-072","q":{"zh":"求 $\\log_8 4$ 的值。","en":"Evaluate $\\log_8 4$."},"options":{"A":"$\\frac32$","B":"$\\frac23$","C":"$\\frac12$","D":"$\\frac34$"}},{"id":"x02-045","q":{"zh":"不等式 $\\frac{2x+1}{x-3} \u003c 0$ 的解集是","en":"The solution set of $\\frac{2x+1}{x-3} \u003c 0$ is"},"options":{"A":"$(-\\infty, -\\frac{1}{2}] \\cup (3, +\\infty)$","B":"$(-\\frac{1}{2}, 3)$","C":{"zh":"$x \\leqslant -\\frac{1}{2}$ 或 $x \\geqslant 3$","en":"$x \\leqslant -\\frac{1}{2}$ or $x \\geqslant 3$"},"D":"$-\\frac{1}{2} \\leqslant x \u003c 3$"}},{"id":"x02-013","q":{"zh":"已知不等式 $x^2 - 3x + m \u003c 0$ 的解集为空集，则实数 $m$ 的取值范围是","en":"The inequality $x^2 - 3x + m \u003c 0$ has an empty solution set. What is the range of the real number $m$?"},"options":{"A":"$m > \\frac{9}{4}$","B":"$m \\leqslant \\frac{9}{4}$","C":"$m \\geqslant \\frac{9}{4}$","D":"$m \u003c \\frac{9}{4}$"}},{"id":"x04-045","q":{"zh":"已知 $f(x)$ 是定义在 $\\mathbb{R}$ 上的偶函数，且在 $[0,+\\infty)$ 上单调递减。则 $f(-2)$、$f(1)$、$f(3)$ 的大小关系是","en":"$f$ is even on $\\mathbb{R}$ and decreasing on $[0,+\\infty)$. The order of $f(-2),f(1),f(3)$ is"},"options":{"A":"$f(1)\u003cf(-2)\u003cf(3)$","B":"$f(3)\u003cf(-2)\u003cf(1)$","C":"$f(-2)\u003cf(1)\u003cf(3)$","D":"$f(1)\u003cf(3)\u003cf(-2)$"}},{"id":"x22-004","q":{"zh":"复数 $z=-3+5i$ 的虚部是？","en":"What is the imaginary part of $z=-3+5i$?"},"options":{"A":"$5i$","B":"$-3$","C":"$-5$","D":"$5$"}},{"id":"m3-035","q":{"zh":"椭圆 $\\frac{x^2}{36} + \\frac{y^2}{9} = 1$ 的长轴端点坐标是","en":"The endpoints of the major axis of $x^2/36 + y^2/9 = 1$ are"},"options":{"A":"$(\\pm 3, 0)$","B":"$(\\pm 6, 0)$","C":"$(0, \\pm 3)$","D":"$(0, \\pm 6)$"}},{"id":"x06-023","q":{"zh":"函数 $f(x)=\\dfrac{1}{\\log_2(x-1)}$ 的定义域是","en":"The domain of $f(x)=\\dfrac{1}{\\log_2(x-1)}$ is"},"options":{"A":{"zh":"$(1,+\\infty)$（漏 $x\\neq2$，错）","en":"$(1,+\\infty)$ (forgets $x\\neq2$; wrong)"},"B":"$(1,2)\\cup(2,+\\infty)$","C":{"zh":"$(0,1)\\cup(1,+\\infty)$（真数方向错）","en":"$(0,1)\\cup(1,+\\infty)$ (wrong argument side; wrong)"},"D":{"zh":"$[1,+\\infty)$（含无定义点，错）","en":"$[1,+\\infty)$ (includes undefined points; wrong)"}}},{"id":"m2-011","q":{"zh":"方程 $2^x = 8$ 的解是","en":"The solution to $2^x = 8$ is"},"options":{"A":"$x = 2$","B":"$x = \\log_2 8$","C":"$x = 4$","D":"$x = 3$"}},{"id":"x08-050","q":{"zh":"已知 $\\tan\\theta=-2$，则 $\\tan 2\\theta=$","en":"Given $\\tan\\theta=-2$, find $\\tan 2\\theta$."},"options":{"A":"$-\\frac{4}{3}$","B":"$\\frac{4}{3}$","C":"$\\frac{3}{4}$","D":"$-\\frac{3}{4}$"}},{"id":"m2-051","q":{"zh":"函数 $f(x) = x^2 + \\cos x$ 的奇偶性是","en":"The parity of $f(x) = x^2 + \\cos x$ is"},"options":{"A":{"zh":"奇函数","en":"Odd function"},"B":{"zh":"既是奇函数又是偶函数","en":"Both odd and even"},"C":{"zh":"非奇非偶函数","en":"Neither odd nor even"},"D":{"zh":"偶函数","en":"Even function"}}},{"id":"m3a-019","q":{"zh":"三条直线 $x + y - 2 = 0$、$2x - y - 1 = 0$、$ax + y - 3 = 0$ 交于同一点，则 $a =$","en":"The three lines $x + y - 2 = 0$, $2x - y - 1 = 0$, $ax + y - 3 = 0$ meet at one point. Then $a =$"},"options":{"A":"$-2$","B":"$1$","C":"$3$","D":"$2$"}},{"id":"x06-076","q":{"zh":"比较 $\\log_{1/2}3$ 与 $\\log_3\\frac12$ 的大小","en":"Compare $\\log_{1/2}3$ and $\\log_3\\frac12$"},"options":{"A":"$\\log_{1/2}3>\\log_3\\frac12$","B":"$\\log_{1/2}3\u003c\\log_3\\frac12$","C":{"zh":"两者相等","en":"they are equal"},"D":{"zh":"无法比较","en":"cannot be compared"}}},{"id":"x05-008","q":{"zh":"函数 $y=\\dfrac{1}{2^x-1}$ 的定义域是","en":"The domain of $y=\\dfrac{1}{2^x-1}$ is"},"options":{"A":"$x>0$","B":"$x\u003c0$","C":"$\\mathbb{R}$","D":"$\\{x\\mid x\\neq0\\}$"}},{"id":"m3-169","q":{"zh":"圆 $x^2 + y^2 = 4$ 在点 $(0, 2)$ 处的切线方程是","en":"Tangent to $x^2 + y^2 = 4$ at (0, 2):"},"options":{"A":"$x = 0$","B":"$y = 2$","C":"$y = -2$","D":"$x = 2$"}},{"id":"x06-073","q":{"zh":"设 $a=\\log_{0.5}0.3$，$b=\\log_{0.5}0.6$，$c=\\log_{0.5}1.2$，则 $a,b,c$ 的大小关系是","en":"Let $a=\\log_{0.5}0.3$, $b=\\log_{0.5}0.6$, $c=\\log_{0.5}1.2$. Their order is"},"options":{"A":"$a\u003cb\u003cc$","B":"$b\u003ca\u003cc$","C":"$a>b>c$","D":"$c>b>a$"}},{"id":"x02-011","q":{"zh":"不等式 $x^2 + 2x - 3 \u003c 0$ 的解集是","en":"What is the solution set of $x^2 + 2x - 3 \u003c 0$?"},"options":{"A":"$(-\\infty, -3) \\cup (1, +\\infty)$","B":"$(-1, 3)$","C":"$(-3, 1)$","D":{"zh":"无解","en":"No solution"}}},{"id":"m2f-091","q":{"zh":"设 $\\lg 2 = a$，$\\lg 3 = b$，则 $\\lg 12 =$","en":"Let $\\lg 2 = a$ and $\\lg 3 = b$. Then $\\lg 12 =$"},"options":{"A":"$2a + b$","B":"$a + 2b$","C":"$2ab$","D":"$a + b$"}},{"id":"m2f-090","q":{"zh":"$\\log_2 40 - \\log_2 5$ 的值是","en":"The value of $\\log_2 40 - \\log_2 5$ is"},"options":{"A":"$8$","B":"$2$","C":"$3$","D":"$\\log_2 35$"}},{"id":"m2f-067","q":{"zh":"设 $a = 0.8^{0.7}$，$b = 0.8^{0.9}$，$c = 1.2^{0.8}$，则","en":"Let $a = 0.8^{0.7}$, $b = 0.8^{0.9}$, $c = 1.2^{0.8}$. Then"},"options":{"A":"$a \u003c b \u003c c$","B":"$b \u003c a \u003c c$","C":"$c \u003c a \u003c b$","D":"$b \u003c c \u003c a$"}},{"id":"m4-069","q":{"zh":"成绩分布：$60$ 分 $4$ 人、$70$ 分 $6$ 人、$80$ 分 $5$ 人、$90$ 分 $3$ 人、$100$ 分 $2$ 人。平均分是","en":"Scores: 60 (4 students), 70 (6), 80 (5), 90 (3), 100 (2). The mean is"},"options":{"A":"75","B":"80","C":"78","D":"76.5"}},{"id":"x05-084","q":{"zh":"某工厂产量每年增长 $20\\%$。若今年产量为 $500$ 件，则 $3$ 年后的产量为","en":"A factory's output grows by 20% each year. If this year's output is 500 units, what is the output after 3 years?"},"options":{"A":"$500\\times0.2^3$","B":"$500+500\\times0.2\\times3$","C":"$500\\times(1.2)^3$","D":"$500\\times(1+0.2\\times3)$"}},{"id":"x04-012","q":{"zh":"已知 $f(x)$ 是定义在 $\\mathbb{R}$ 上的增函数，且 $f(2) = 0$，则不等式 $f(x-1) > 0$ 的解集是","en":"Let $f$ be increasing on $\\mathbb{R}$ with $f(2)=0$. The solution set of $f(x-1)>0$ is"},"options":{"A":"$(2, +\\infty)$","B":"$(1, +\\infty)$","C":"$(-\\infty, 1)$","D":"$(3, +\\infty)$"}},{"id":"m2-294","q":{"zh":"等差数列 $\\{a_n\\}$ 中，$a_1 + a_2 + a_3 = 3$，$a_4 + a_5 + a_6 = 12$，则公差 $d =$","en":"AP: $a_1+a_2+a_3=3$, $a_4+a_5+a_6=12$. Then $d =$"},"options":{"A":"$\\frac{1}{2}$","B":"1","C":"$\\frac{3}{2}$","D":"2"}},{"id":"x03-021","q":{"zh":"已知 $f(x)=2x+1$，$g(x)=x^2-3$，则 $g(f(0))$ 与 $f(g(0))$ 的值分别为","en":"Given $f(x)=2x+1$ and $g(x)=x^2-3$, what are $g(f(0))$ and $f(g(0))$?"},"options":{"A":"$-2, -5$","B":"$-5, -2$","C":"$1, -5$","D":"$-2, 3$"}},{"id":"m2f-053","q":{"zh":"要得到函数 $y = f(x-1) + 2$ 的图像，需将 $y = f(x)$ 的图像","en":"To obtain the graph of $y = f(x-1) + 2$, shift the graph of $y = f(x)$"},"options":{"A":{"zh":"左移 $1$、上移 $2$","en":"Left $1$, up $2$"},"B":{"zh":"右移 $1$、下移 $2$","en":"Right $1$, down $2$"},"C":{"zh":"左移 $1$、下移 $2$","en":"Left $1$, down $2$"},"D":{"zh":"右移 $1$、上移 $2$","en":"Right $1$, up $2$"}}},{"id":"m2f-086","q":{"zh":"$\\log_5 125$ 的值是","en":"The value of $\\log_5 125$ is"},"options":{"A":"$5$","B":"$3$","C":"$25$","D":"$\\frac{1}{3}$"}},{"id":"m2f-031","q":{"zh":"函数 $f(x) = x^4 + 3x^2$ 是","en":"The function $f(x) = x^4 + 3x^2$ is"},"options":{"A":{"zh":"偶函数","en":"Even function"},"B":{"zh":"奇函数","en":"Odd function"},"C":{"zh":"非奇非偶函数","en":"Neither odd nor even"},"D":{"zh":"既是奇函数又是偶函数","en":"Both odd and even"}}},{"id":"x05-072","q":{"zh":"函数 $y=\\left(\\frac12\\right)^x$ 的值域是","en":"The range of the function $y=(1/2)^x$ is"},"options":{"A":"$\\mathbb{R}$","B":"$(0,+\\infty)$","C":"$(-\\infty,0)$","D":"$[0,1]$"}},{"id":"m4-020","q":{"zh":"$5$ 人排成一排照相，甲、乙必须相邻的排法有多少种？","en":"In how many ways can $5$ people line up for a photo if A and B must be adjacent?"},"options":{"A":"24","B":"120","C":"96","D":"48"}},{"id":"x03-026","q":{"zh":"已知函数 $f(x)$ 的定义域为 $[1,3]$，则函数 $h(x)=f(x)+f(4-x)$ 的定义域为","en":"The domain of $f$ is $[1,3]$. Find the domain of $h(x)=f(x)+f(4-x)$."},"options":{"A":"$[1,3]$","B":"$[3,4]$","C":"$[1,4]$","D":"$[2,3]$"}},{"id":"x07-034","q":{"zh":"函数 $y=2\\cos x$ 的振幅是","en":"The amplitude of $y=2\\cos x$ is"},"options":{"A":"$1$","B":"$\\frac12$","C":"$-2$","D":"$2$"}},{"id":"x05-090","q":{"zh":"不等式 $9^x-4\\cdot3^x+3\u003c0$ 的解集是","en":"The solution set of the inequality $9^x-4\\cdot3^x+3\u003c0$ is"},"options":{"A":"$(-\\infty,0)\\cup(1,+\\infty)$","B":"$(1,+\\infty)$","C":"$(0,1)$","D":"$(-\\infty,1)$"}},{"id":"m1s-050","q":{"zh":"用总长 $20$ m 的篱笆围一个一面靠墙的矩形菜园（靠墙一面不用篱笆），则菜园面积的最大值是","en":"A rectangular vegetable garden is enclosed by $20$ m of fencing with one side against a wall (no fence on that side). The maximum area is"},"options":{"A":"$25\\ \\text{m}^2$","B":"$100\\ \\text{m}^2$","C":"$40\\ \\text{m}^2$","D":"$50\\ \\text{m}^2$"}},{"id":"m1-009","q":{"zh":"不等式组 $\\begin{cases} x > 2 \\\\ x \\leqslant 5 \\end{cases}$ 的解集用区间表示为","en":"The solution set of $\\begin{cases} x > 2 \\\\ x \\leqslant 5 \\end{cases}$ in interval notation is"},"options":{"A":"$[2, 5]$","B":"$(2, 5)$","C":"$[2, 5)$","D":"$(2, 5]$"}},{"id":"m2f-025","q":{"zh":"已知 $f(x) = 2x + 3$，且 $f(g(x)) = 4x + 5$，则 $g(x) =$","en":"Given $f(x) = 2x + 3$ and $f(g(x)) = 4x + 5$, then $g(x) =$"},"options":{"A":"$2x + 1$","B":"$2x - 1$","C":"$4x + 2$","D":"$x + 1$"}},{"id":"m1s-021","q":{"zh":"下列各数中是无理数的是","en":"Which of the following numbers is irrational?"},"options":{"A":"$\\frac{22}{7}$","B":"$\\sqrt{5}$","C":"$\\sqrt{16}$","D":"$-\\frac{3}{5}$"}},{"id":"x05-053","q":{"zh":"不等式 $\\left(\\frac{1}{3}\\right)^{x^2-4}>1$ 的解集是","en":"The solution set of the inequality $\\left(\\frac{1}{3}\\right)^{x^2-4}>1$ is"},"options":{"A":"$(-\\infty,-2)\\cup(2,+\\infty)$","B":"$(-\\infty,-4)\\cup(4,+\\infty)$","C":"$(-4,4)$","D":"$(-2,2)$"}},{"id":"x09-083","q":{"zh":"方程 $2\\sin^2 x+5\\cos x+1=0$ 在 $[0,2\\pi)$ 内的解集是","en":"The solution set of $2\\sin^2x+5\\cos x+1=0$ on $[0,2\\pi)$ is"},"options":{"A":"$\\left\\{\\frac{\\pi}{3},\\frac{5\\pi}{3}\\right\\}$","B":"$\\left\\{\\frac{2\\pi}{3}\\right\\}$","C":"$\\left\\{\\frac{\\pi}{6},\\frac{5\\pi}{6}\\right\\}$","D":"$\\left\\{\\frac{2\\pi}{3},\\frac{4\\pi}{3}\\right\\}$"}},{"id":"m2f-097","q":{"zh":"函数 $y = \\log_a(x-3) + 2$（$a > 0$ 且 $a \\neq 1$）的图像恒过定点","en":"The graph of $y = \\log_a(x-3) + 2$ ($a > 0$, $a \\neq 1$) always passes through the fixed point"},"options":{"A":"$(4, 2)$","B":"$(3, 2)$","C":"$(1, 0)$","D":"$(4, 0)$"}},{"id":"x06-020","q":{"zh":"设 $f(x)=\\log_2 x$，$g(x)=2^x$，则 $g(f(x))$ 等于（$x>0$）","en":"Let $f(x)=\\log_2 x$ and $g(x)=2^x$. Then $g(f(x))$ equals (for $x>0$)"},"options":{"A":"$1$","B":"$x$","C":"$2^x$","D":"$\\log_2 x$"}},{"id":"x05-081","q":{"zh":"解方程 $4^x-3\\cdot2^x-4=0$，下列解法正确的是","en":"Solving $4^x-3\\cdot2^x-4=0$, which method is correct?"},"options":{"A":{"zh":"直接得 $x=2$","en":"Directly conclude x=2"},"B":{"zh":"设 $t=2^x$，得 $t^2-3t-4=0$，解得 $t=4$ 或 $t=-1$，故 $x=2$ 或 $x=-1$","en":"Let t=2^x, get t^2-3t-4=0, roots t=4 or t=-1, so x=2 or x=-1"},"C":{"zh":"设 $t=2^x>0$，得 $t^2-3t-4=0$，解得 $t=4$ 或 $t=-1$（舍去），故 $x=2$","en":"Let t=2^x>0, get t^2-3t-4=0, roots t=4 or t=-1 (discard), so x=2"},"D":{"zh":"设 $t=2^x$，得 $t^2+3t-4=0$，解得 $t=1$ 或 $t=-4$，故 $x=0$","en":"Let t=2^x, get t^2+3t-4=0, roots t=1 or t=-4, so x=0"}}},{"id":"m3b-006","q":{"zh":"已知 $\\vec{a} = (3, -2)$ 与 $\\vec{b} = (m, 4)$ 平行，则 $m =$","en":"If $\\vec{a} = (3, -2)$ is parallel to $\\vec{b} = (m, 4)$, then $m =$"},"options":{"A":"6","B":"$-\\frac{8}{3}$","C":"$-6$","D":"12"}},{"id":"x19-015","q":{"zh":"双曲线 $\\frac{x^2}{25}-\\frac{y^2}{144}=1$ 的顶点到较近焦点的距离为","en":"For the hyperbola $\\frac{x^2}{25}-\\frac{y^2}{144}=1$, the distance from a vertex to the nearer focus is"},"options":{"A":"$5$","B":"$13$","C":"$18$","D":"$8$"}}]};
+  var KEY = 'csca-exam-' + DATA.slug;
+  var state = { answers: {}, name: '', sid: '', startedAt: Date.now(), submittedAt: 0, locked: false, lang: 'zh' };
+  var saveTimer = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        state = Object.assign(state, s);
+      }
+    } catch (e) {}
+    if (!state.startedAt) state.startedAt = Date.now();
+  }
+  function persist() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }, 150);
+  }
+  function fmt(sec) {
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function txt(v) { return typeof v === 'string' ? v : (v[state.lang] || v.zh || v.en || ''); }
+  function renderMath(root) {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(root, { delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ], throwOnError: false });
+    }
+  }
+
+  function render() {
+    document.getElementById('title').textContent = DATA.title;
+    document.getElementById('subtitle').textContent = DATA.subtitle || '';
+    document.getElementById('instructions').textContent = DATA.instructions || '';
+    document.getElementById('count').textContent = String(DATA.questions.length);
+    if (DATA.durationMinutes) {
+      document.getElementById('limit').textContent = DATA.durationMinutes + ' 分钟';
+    } else {
+      document.getElementById('limitWrap').style.display = 'none';
+    }
+
+    var graded = Boolean(DATA.showResults && state.locked && state.submittedAt);
+    var host = document.getElementById('paper');
+    host.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var chosen = state.answers[q.id] || null;
+      var box = document.createElement('section');
+      box.className = 'q' + (graded ? (chosen === q.correct ? ' ok' : ' bad') : '');
+      box.setAttribute('data-index', String(i));
+      var h = document.createElement('h3');
+      h.textContent = (i + 1) + '.';
+      box.appendChild(h);
+      var stem = document.createElement('div');
+      stem.className = 'stem';
+      stem.textContent = txt(q.q);
+      box.appendChild(stem);
+      ['A', 'B', 'C', 'D'].forEach(function (K) {
+        if (!q.options[K]) return;
+        var row = document.createElement('div');
+        var cls = 'opt' + (chosen === K ? ' on' : '');
+        if (graded && K === q.correct) cls += ' correct';
+        else if (graded && chosen === K) cls += ' wrong';
+        row.className = cls;
+        row.setAttribute('data-q', q.id);
+        row.setAttribute('data-k', K);
+        var k = document.createElement('span'); k.className = 'k'; k.textContent = K + '.';
+        var v = document.createElement('span'); v.textContent = txt(q.options[K]);
+        row.appendChild(k); row.appendChild(v);
+        if (graded && K === q.correct) {
+          var okBadge = document.createElement('span');
+          okBadge.className = 'badge ok';
+          okBadge.textContent = '正确答案';
+          row.appendChild(okBadge);
+        }
+        if (graded && chosen === K) {
+          var pick = document.createElement('span');
+          pick.className = 'badge ' + (K === q.correct ? 'ok' : 'bad');
+          pick.textContent = K === q.correct ? '你的选择 ✓' : '你的选择 ✗';
+          row.appendChild(pick);
+        }
+        row.addEventListener('click', function () {
+          if (state.locked) return;
+          state.answers[q.id] = (state.answers[q.id] === K ? null : K);
+          persist();
+          render();
+        });
+        box.appendChild(row);
+      });
+      if (graded && q.explanation) {
+        var det = document.createElement('details');
+        det.className = 'explain';
+        det.open = true;
+        var sum = document.createElement('summary');
+        sum.textContent = '解析';
+        var body = document.createElement('div');
+        body.textContent = txt(q.explanation);
+        det.appendChild(sum); det.appendChild(body);
+        box.appendChild(det);
+      }
+      host.appendChild(box);
+    });
+    renderMath(host);
+    document.getElementById('sName').value = state.name || '';
+    document.getElementById('sId').value = state.sid || '';
+    document.getElementById('btnSubmit').hidden = !DATA.showResults || graded;
+    renderResult(graded);
+    renderPanel();
+  }
+
+  function buildPanelGrid() {
+    var grid = document.getElementById('panelGrid');
+    if (grid.childElementCount === DATA.questions.length) return;
+    grid.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = String(i + 1);
+      b.addEventListener('click', function () { jumpToQuestion(i); });
+      grid.appendChild(b);
+    });
+  }
+  function jumpToQuestion(i) {
+    var el = document.querySelector('.q[data-index="' + i + '"]');
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('flash');
+    setTimeout(function () { el.classList.remove('flash'); }, 1200);
+  }
+  function renderPanel() {
+    var total = DATA.questions.length;
+    var done = 0;
+    DATA.questions.forEach(function (q) { if (state.answers[q.id]) done += 1; });
+    document.getElementById('doneCount').textContent = String(done);
+    document.getElementById('todoCount').textContent = String(total - done);
+    document.getElementById('panelProgress').style.width = (total ? Math.round((done / total) * 100) : 0) + '%';
+    buildPanelGrid();
+    var grid = document.getElementById('panelGrid');
+    for (var i = 0; i < grid.children.length; i += 1) {
+      grid.children[i].className = state.answers[DATA.questions[i].id] ? 'ans' : '';
+    }
+    document.getElementById('panelNext').disabled = done >= total;
+  }
+
+  function fmtDuration(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    if (m <= 0) return s + ' 秒';
+    return m + ' 分 ' + (s < 10 ? '0' : '') + s + ' 秒';
+  }
+
+  function renderResult(graded) {
+    var el = document.getElementById('result');
+    if (!graded) {
+      el.hidden = true;
+      el.className = 'result';
+      el.innerHTML = '';
+      return;
+    }
+    var total = DATA.questions.length;
+    var correct = 0, unanswered = 0;
+    DATA.questions.forEach(function (q) {
+      var chosen = state.answers[q.id] || null;
+      if (!chosen) unanswered += 1;
+      if (chosen && chosen === q.correct) correct += 1;
+    });
+    var pct = total ? Math.round((correct / total) * 100) : 0;
+    var seconds = (state.submittedAt - state.startedAt) / 1000;
+    el.innerHTML = '';
+    el.hidden = false;
+    el.className = 'result show';
+
+    var h = document.createElement('h2');
+    h.textContent = '批改结果';
+    el.appendChild(h);
+
+    var score = document.createElement('div');
+    score.className = 'result-score';
+    score.appendChild(document.createTextNode(correct + ' / ' + total + ' '));
+    var small = document.createElement('small');
+    small.textContent = '题正确';
+    score.appendChild(small);
+    el.appendChild(score);
+
+    var meta = document.createElement('div');
+    meta.className = 'result-meta';
+    meta.textContent = '正确率 ' + pct + '% · 用时 ' + fmtDuration(seconds) + ' · 未作答 ' + unanswered + ' 题';
+    el.appendChild(meta);
+
+    var who = document.createElement('div');
+    who.className = 'result-meta';
+    who.textContent = (state.name || '未填写姓名') + (state.sid ? '（' + state.sid + '）' : '') +
+      ' · 提交于 ' + new Date(state.submittedAt).toLocaleString();
+    el.appendChild(who);
+
+    var hint = document.createElement('div');
+    hint.className = 'result-hint';
+    hint.textContent = '需要纸质版时，点击“打印 / PDF”，批改结果和解析会一起打印。';
+    el.appendChild(hint);
+  }
+
+  function submitPaper() {
+    if (!DATA.showResults || state.locked) return;
+    var unanswered = 0;
+    DATA.questions.forEach(function (q) { if (!state.answers[q.id]) unanswered += 1; });
+    if (unanswered > 0 && !confirm('还有 ' + unanswered + ' 题未作答，确定提交吗？提交后不能修改答案。')) return;
+    state.locked = true;
+    state.submittedAt = Date.now();
+    persist();
+    render();
+    var el = document.getElementById('result');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function tick() {
+    var panelTimer = document.getElementById('panelTimer');
+    if (state.locked && state.submittedAt) {
+      var stopped = fmt((state.submittedAt - state.startedAt) / 1000);
+      document.getElementById('timer').textContent = stopped;
+      panelTimer.textContent = stopped;
+      return;
+    }
+    if (!DATA.durationMinutes) {
+      var used = fmt((Date.now() - state.startedAt) / 1000);
+      document.getElementById('timer').textContent = used;
+      panelTimer.textContent = used;
+      return;
+    }
+    var left = DATA.durationMinutes * 60 - (Date.now() - state.startedAt) / 1000;
+    var el = document.getElementById('timer');
+    el.textContent = fmt(left);
+    panelTimer.textContent = fmt(left);
+    var warn = left <= 300;
+    if (warn) el.classList.add('warn');
+    panelTimer.classList.toggle('warn', warn);
+    if (left <= 0 && !state.locked) {
+      state.locked = true; state.submittedAt = Date.now(); persist();
+      if (DATA.showResults) {
+        render();
+        var result = document.getElementById('result');
+        if (result) result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        var done = document.getElementById('done');
+        done.style.display = 'block';
+        done.textContent = '时间到，答案已锁定。请点击“导出答案”交给老师。';
+      }
+    }
+  }
+
+  document.getElementById('sName').addEventListener('input', function (e) { state.name = e.target.value; persist(); });
+  document.getElementById('sId').addEventListener('input', function (e) { state.sid = e.target.value; persist(); });
+
+  document.getElementById('btnClear').addEventListener('click', function () {
+    if (!confirm(state.locked ? '重新作答会清除本次批改结果，确定继续？' : '确定清空所有已选答案？')) return;
+    state.answers = {}; state.locked = false; state.submittedAt = 0;
+    document.getElementById('done').style.display = 'none';
+    persist(); render();
+  });
+
+  document.getElementById('panelToggle').addEventListener('click', function () {
+    var panel = document.getElementById('panel');
+    panel.classList.toggle('collapsed');
+    this.textContent = panel.classList.contains('collapsed') ? '▸' : '▾';
+  });
+  document.getElementById('panelNext').addEventListener('click', function () {
+    for (var i = 0; i < DATA.questions.length; i += 1) {
+      if (!state.answers[DATA.questions[i].id]) { jumpToQuestion(i); return; }
+    }
+  });
+
+  document.getElementById('btnSubmit').addEventListener('click', submitPaper);
+  document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+
+  document.getElementById('btnExport').addEventListener('click', function () {
+    var out = {
+      paperId: DATA.paperId,
+      slug: DATA.slug,
+      student: { name: state.name || '', id: state.sid || '' },
+      answers: DATA.questions.map(function (q) { return { problemId: q.id, selected: state.answers[q.id] || null }; }),
+      startedAt: state.startedAt,
+      submittedAt: state.submittedAt || Date.now(),
+      durationSeconds: Math.round(((state.submittedAt || Date.now()) - state.startedAt) / 1000)
+    };
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'answers-' + DATA.slug + '-' + (state.name || 'student') + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('btnImport').addEventListener('click', function () { document.getElementById('fileInput').click(); });
+  document.getElementById('fileInput').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        if (state.locked) { alert('本卷已提交，不能导入答案。如需重做请先点“清空”。'); e.target.value = ''; return; }
+        var obj = JSON.parse(String(reader.result));
+        if (obj.paperId && obj.paperId !== DATA.paperId) {
+          if (!confirm('这份答案属于另一份试卷，仍要导入吗？')) return;
+        }
+        var map = {};
+        (obj.answers || []).forEach(function (a) { if (a.selected) map[a.problemId] = a.selected; });
+        state.answers = map;
+        if (obj.student) { state.name = obj.student.name || state.name; state.sid = obj.student.id || state.sid; }
+        persist(); render();
+      } catch (err) { alert('文件格式不正确'); }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  });
+
+  document.getElementById('btnLang').addEventListener('click', function () {
+    state.lang = state.lang === 'zh' ? 'en' : 'zh';
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    persist(); render();
+  });
+
+  function boot() {
+    load();
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    if (DATA.passcode) {
+      var gate = document.getElementById('gate');
+      gate.hidden = false;
+      document.getElementById('gateBtn').addEventListener('click', function () {
+        if (document.getElementById('gateInput').value === DATA.passcode) {
+          gate.hidden = true;
+        } else {
+          document.getElementById('gateErr').textContent = '口令不正确';
+        }
+      });
+    }
+    render();
+    tick();
+    setInterval(tick, 1000);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

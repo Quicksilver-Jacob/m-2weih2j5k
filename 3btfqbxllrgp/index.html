@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>CSCA 数学练习261109</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<style>
+  :root { --ink:#1f2328; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bg:#f8fafc; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font: 16px/1.7 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+  header.paper { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px 24px; }
+  h1 { font-size: 22px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:12px; }
+  .meta { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); font-size:14px; }
+  .meta b { color:var(--ink); }
+  .bar { position:sticky; top:0; z-index:20; display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:rgba(248,250,252,.95); backdrop-filter:blur(6px); padding:12px 0; border-bottom:1px solid var(--line); margin:16px 0 8px; }
+  .timer { font-variant-numeric: tabular-nums; font-weight:700; font-size:18px; margin-right:auto; }
+  .timer.warn { color:#b91c1c; }
+  button { font: inherit; cursor:pointer; border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 12px; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.ghost { background:transparent; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .student { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+  .student input { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; min-width:180px; }
+  .q { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0; }
+  .q h3 { margin:0 0 10px; font-size:16px; font-weight:600; }
+  .opt { display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:10px; cursor:pointer; }
+  .opt:hover { background:#f1f5f9; }
+  .opt.on { background:#eff6ff; outline:1px solid #bfdbfe; }
+  .opt .k { font-weight:700; width:22px; flex:none; }
+  .foot { color:var(--muted); font-size:13px; margin-top:26px; }
+  .gate { position:fixed; inset:0; background:#fff; z-index:50; display:flex; align-items:center; justify-content:center; }
+  .gate .box { width:min(92vw,360px); border:1px solid var(--line); border-radius:14px; padding:22px; text-align:center; }
+  .gate input { width:100%; padding:10px; margin:12px 0; border:1px solid var(--line); border-radius:9px; font:inherit; }
+  .err { color:#b91c1c; font-size:14px; min-height:20px; }
+  .done { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:12px; padding:14px 16px; margin:16px 0; display:none; }
+  .result { display:none; background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0; }
+  .result.show { display:block; }
+  .result h2 { margin:0 0 6px; font-size:18px; }
+  .result-score { font-size:30px; font-weight:800; line-height:1.2; }
+  .result-score small { font-size:15px; font-weight:600; color:var(--muted); }
+  .result-meta { color:var(--muted); font-size:14px; margin-top:4px; }
+  .result-hint { color:var(--muted); font-size:12px; margin-top:8px; }
+  .opt.correct { background:#ecfdf5; outline:1px solid #86efac; }
+  .opt.wrong { background:#fef2f2; outline:1px solid #fca5a5; }
+  .badge { margin-left:auto; flex:none; border:1px solid currentColor; border-radius:6px; padding:0 6px; font-size:11px; line-height:18px; }
+  .badge.ok { color:#047857; }
+  .badge.bad { color:#b91c1c; }
+  .explain { margin-top:10px; border-top:1px dashed var(--line); padding-top:8px; font-size:14px; color:#374151; }
+  .explain summary { cursor:pointer; color:var(--muted); font-size:13px; }
+  .q.ok { border-left:4px solid #34d399; }
+  .q.bad { border-left:4px solid #f87171; }
+  /* floating progress panel */
+  .panel { position:fixed; right:16px; bottom:16px; z-index:30; width:216px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 28px rgba(15,23,42,.14); font-size:13px; }
+  .panel-head { display:flex; align-items:center; gap:8px; padding:9px 10px 9px 12px; border-bottom:1px solid var(--line); }
+  .panel-title { font-weight:700; color:#334155; }
+  .panel-timer { margin-left:auto; font-variant-numeric:tabular-nums; font-weight:700; font-size:15px; color:#0f172a; }
+  .panel-timer.warn { color:#b91c1c; }
+  .panel-toggle { border:none; background:transparent; padding:0 2px; font-size:14px; line-height:1; color:#64748b; }
+  .panel-body { padding:10px 12px 12px; }
+  .panel-stats { display:flex; justify-content:space-between; color:#475569; margin-bottom:7px; }
+  .panel-stats b { color:#0f172a; }
+  .panel-bar { height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:9px; }
+  .panel-bar i { display:block; height:100%; width:0; background:#2563eb; border-radius:999px; transition:width .2s ease; }
+  .panel-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; max-height:132px; overflow:auto; }
+  .panel-grid button { padding:0; height:24px; font-size:11px; border-radius:6px; border:1px solid #e2e8f0; background:#fff; color:#64748b; }
+  .panel-grid button.ans { background:#dbeafe; border-color:#bfdbfe; color:#1d4ed8; font-weight:700; }
+  .panel-next { width:100%; margin-top:9px; padding:6px 8px; font-size:12px; }
+  .panel.collapsed { width:auto; }
+  .panel.collapsed .panel-body { display:none; }
+  .panel.collapsed .panel-head { border-bottom:none; }
+  .q.flash { outline:3px solid #93c5fd; outline-offset:3px; }
+  .print-head { display:none; }
+  @media (max-width:640px) { .panel { right:10px; bottom:10px; width:196px; } .panel-grid { grid-template-columns:repeat(5,1fr); } }
+  @media print {
+    @page { size:A4; margin:9mm 9mm 10mm; }
+    body { background:#fff; font-size:10.5pt; line-height:1.32; }
+    .bar, .student, .foot, .gate, .done, .panel, button, input { display:none !important; }
+    .result.show { display:block !important; margin:0 0 3mm; padding:2mm 2.5mm; border:1px solid #111; border-radius:0; break-inside:avoid; }
+    .result h2 { font-size:12pt; margin:0 0 1mm; }
+    .result-score { font-size:17pt; }
+    .result-meta { font-size:8.5pt; }
+    .result-hint { display:none; }
+    .opt.correct, .opt.wrong { outline:none; background:none; }
+    .opt.correct { border:1px solid #111; }
+    .opt.wrong { border:1px dashed #111; }
+    .badge { font-size:7.5pt; line-height:1.2; padding:0 1mm; border:1px solid #111; color:#111; }
+    .explain { display:block; font-size:8.5pt; border-top:1px dotted #999; margin-top:1mm; padding-top:1mm; }
+    .explain summary { display:none; }
+    .q.ok, .q.bad { border-left:none; }
+    .q { break-inside:auto; page-break-inside:auto; }
+    .wrap { max-width:none; padding:0; margin:0; }
+    header.paper { border:none; border-radius:0; border-bottom:1px solid #111; padding:0 0 2.5mm; margin:0 0 1.5mm; }
+    h1 { font-size:15pt; margin:0 0 .8mm; }
+    .sub { font-size:9pt; margin-bottom:.8mm; }
+    .meta { font-size:8.5pt; gap:8mm; }
+    #instructions { font-size:9pt !important; margin:1mm 0 0 !important; }
+    .print-head { display:block; font-size:9pt; margin-top:2mm; color:#111; }
+    .q { break-inside:avoid; page-break-inside:avoid; border:0; border-radius:0; padding:1.6mm 0 1.2mm; margin:0; background:#fff; }
+    .q + .q { border-top:1px dotted #cbd5e1; }
+    .q h3 { display:inline; font-size:10.5pt; margin:0 1.5mm 0 0; }
+    .q .stem { display:inline; }
+    .opt { padding:.35mm 0; gap:2mm; }
+    .opt:hover { background:none; }
+    .opt .k { width:6mm; }
+    a { color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden>
+  <div class="box">
+    <h3 style="margin:0">需要访问口令</h3>
+    <p class="sub">请输入老师提供的口令</p>
+    <input id="gateInput" type="password" autocomplete="off" />
+    <div class="err" id="gateErr"></div>
+    <button class="primary" id="gateBtn">进入试卷</button>
+  </div>
+</div>
+<div class="wrap">
+  <header class="paper">
+    <h1 id="title"></h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="meta">
+      <span>题数 <b id="count"></b></span>
+      <span id="limitWrap">限时 <b id="limit"></b></span>
+    </div>
+    <p id="instructions" style="margin:12px 0 0;color:#374151"></p>
+    <div class="print-head">姓名：______________　学号：______________　日期：______________</div>
+  </header>
+
+  <div class="student">
+    <input id="sName" placeholder="姓名" autocomplete="off" />
+    <input id="sId" placeholder="学号 / 班级" autocomplete="off" />
+    <button class="ghost" id="btnLang">EN</button>
+  </div>
+
+  <div class="bar">
+    <span class="timer" id="timer">--:--</span>
+    <button id="btnSubmit" class="primary" hidden>提交并批改</button>
+    <button id="btnPrint">打印 / PDF</button>
+    <button id="btnImport">导入答案</button>
+    <button id="btnExport" class="primary">导出答案</button>
+    <button id="btnClear" class="ghost">清空</button>
+    <input id="fileInput" type="file" accept="application/json" hidden />
+  </div>
+
+  <div class="done" id="done"></div>
+  <div class="result" id="result" hidden></div>
+  <div id="paper"></div>
+
+  <aside class="panel" id="panel" aria-label="答题进度">
+    <div class="panel-head">
+      <span class="panel-title">答题进度</span>
+      <span class="panel-timer" id="panelTimer">--:--</span>
+      <button class="panel-toggle" id="panelToggle" title="收起 / 展开">▾</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-stats"><span>已答 <b id="doneCount">0</b></span><span>未答 <b id="todoCount">0</b></span></div>
+      <div class="panel-bar"><i id="panelProgress"></i></div>
+      <div class="panel-grid" id="panelGrid"></div>
+      <button class="panel-next" id="panelNext">跳到第一道未答</button>
+    </div>
+  </aside>
+  <div class="foot">答案会自动保存在本机浏览器中；换设备时请先导出，再在新设备导入。</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+(function () {
+  var DATA = {"slug":"3btfqbxllrgp","paperId":"p_mw8qylll_u22t9q","title":"CSCA 数学练习261109","subtitle":"","instructions":"本卷为单选题，选出唯一正确答案。","durationMinutes":null,"passcode":"","showResults":false,"questions":[{"id":"x01-105","q":{"zh":"已知 $A=\\{x\\in\\mathbb{Z}\\mid -1\\leqslant x\u003c3\\}$，$B=\\{-1,0,1,2,3\\}$，则","en":"Given $A=\\{x\\in\\mathbb{Z}\\mid -1\\leqslant x\u003c3\\}$ and $B=\\{-1,0,1,2,3\\}$, which is true?"},"options":{"A":"$B\\subsetneqq A$","B":"$A=B$","C":"$A\\subsetneqq B$","D":"$A\\not\\subseteq B$"}},{"id":"x03-043","q":{"zh":"函数 $y=\\sqrt{x^2-2x+3}$ 的值域是","en":"The range of $y=\\sqrt{x^2-2x+3}$ is"},"options":{"A":"$y\\geqslant 1$","B":"$y\\geqslant\\sqrt{2}$","C":"$y\\geqslant 0$","D":"$y\\geqslant 2$"}},{"id":"x05-082","q":{"zh":"不等式 $2^{x+1}\u003c16$ 的解集是","en":"The solution set of the inequality $2^{x+1}\u003c16$ is"},"options":{"A":"$(-\\infty,3)$","B":"$(3,+\\infty)$","C":"$(-\\infty,4)$","D":"$(2,+\\infty)$"}},{"id":"x10-064","q":{"zh":"等差数列 $\\{a_n\\}$ 中，$a_2+a_5=19$，$a_3+a_6=25$，则 $S_{10}=$","en":"In an arithmetic progression, $a_2+a_5=19$ and $a_3+a_6=25$. Then $S_{10}=$"},"options":{"A":"$145$","B":"$150$","C":"$155$","D":"$310$"}},{"id":"m2-136","q":{"zh":"方程 $\\log_3 x + \\log_3(x-2) = 1$ 的解是","en":"Solve $\\log_3 x + \\log_3(x-2) = 1$"},"options":{"A":"$x = 3$","B":"$x = -1$","C":{"zh":"$x = 3$ 或 $x = -1$","en":"$x = 3$ or $x = -1$"},"D":{"zh":"无解","en":"No solution"}}},{"id":"m2f-074","q":{"zh":"函数 $y = 2^x$ 在区间 $[-1, 2]$ 上的值域是","en":"The range of $y = 2^x$ on $[-1, 2]$ is"},"options":{"A":"$[0, 4]$","B":"$(0, 4]$","C":"$[1, 4]$","D":"$[\\frac{1}{2}, 4]$"}},{"id":"x19-062","q":{"zh":"双曲线 $\\frac{x^2}{a^2}-\\frac{y^2}{b^2}=1$（$a>0$，$b>0$）上一点 $P$ 满足 $\\angle F_1PF_2=60^\\circ$，若 $\\triangle PF_1F_2$ 的面积为 $9\\sqrt3$，则 $b$ 等于","en":"A point $P$ on the hyperbola $\\frac{x^2}{a^2}-\\frac{y^2}{b^2}=1$ with $a>0$, $b>0$ satisfies $\\angle F_1PF_2=60^\\circ$. If the area of $\\triangle PF_1F_2$ is $9\\sqrt3$, then $b$ equals"},"options":{"A":"$9$","B":"$3\\sqrt3$","C":"$3\\sqrt2$","D":"$3$"}},{"id":"m2t-023","q":{"zh":"函数 $y = 3\\sin(\\frac{x}{3} + \\frac{\\pi}{6})$ 的最小正周期是","en":"The fundamental period of $y = 3\\sin(\\frac{x}{3} + \\frac{\\pi}{6})$ is"},"options":{"A":"$\\frac{2\\pi}{3}$","B":"$2\\pi$","C":"$3\\pi$","D":"$6\\pi$"}},{"id":"x08-080","q":{"zh":"$\\cos 40^\\circ + \\cos 140^\\circ$ 的值是","en":"The value of $\\cos 40^\\circ + \\cos 140^\\circ$ is"},"options":{"A":"$2\\cos 50^\\circ$","B":"$\\cos 80^\\circ$","C":"$0$","D":"$2\\sin 50^\\circ$"}},{"id":"m2t-014","q":{"zh":"已知 $\\sin\\theta + \\cos\\theta = \\frac{1}{5}$，$\\theta \\in (0, \\pi)$，则 $\\sin\\theta - \\cos\\theta =$","en":"Given $\\sin\\theta + \\cos\\theta = \\frac{1}{5}$ with $\\theta \\in (0, \\pi)$, then $\\sin\\theta - \\cos\\theta =$"},"options":{"A":"$\\frac{7}{5}$","B":"$-\\frac{7}{5}$","C":"$\\pm\\frac{7}{5}$","D":"$\\frac{3}{5}$"}},{"id":"m2t-042","q":{"zh":"已知 $\\tan\\theta = \\frac{1}{2}$，则 $\\sin 2\\theta =$","en":"Given $\\tan\\theta = \\frac{1}{2}$, then $\\sin 2\\theta =$"},"options":{"A":"$\\frac{4}{5}$","B":"$\\frac{3}{5}$","C":"$\\frac{2}{5}$","D":"$\\frac{1}{2}$"}},{"id":"x05-012","q":{"zh":"关于幂函数 $y=x^3$，下列说法正确的是","en":"Concerning $y=x^3$, which is correct?"},"options":{"A":{"zh":"图像关于 $y$ 轴对称","en":"Its graph is symmetric about the $y$-axis"},"B":{"zh":"图像经过点 $(0,1)$","en":"Its graph passes through $(0,1)$"},"C":{"zh":"在 $\\mathbb{R}$ 上单调递减","en":"It is decreasing on $\\mathbb{R}$"},"D":{"zh":"图像关于原点对称，且在 $\\mathbb{R}$ 上单调递增","en":"Its graph is symmetric about the origin and it is increasing on $\\mathbb{R}$"}}},{"id":"x22-025","q":{"zh":"下列命题错误的是？","en":"Which of the following statements is false?"},"options":{"A":{"zh":"对任意正整数 $n$，都有 $i^n+i^{n+1}+i^{n+2}+i^{n+3}=i$","en":"For every positive integer $n$, $i^n+i^{n+1}+i^{n+2}+i^{n+3}=i$"},"B":"$i^2=-1$","C":"$i^4=1$","D":"$i^3=-i$"}},{"id":"x16-056","q":{"zh":"已知 $A(1,1)$，线段 $AB$ 的中点为 $M(2,3)$，则 $B$ 的坐标是","en":"Given A(1,1) and midpoint M(2,3) of AB, the coordinates of B are"},"options":{"A":"$(3,5)$","B":"$(1,2)$","C":"$(3,4)$","D":"$(2,2)$"}},{"id":"x01-012","q":{"zh":"已知集合 $A = \\{1, a, a^2\\}$ 中恰有 $3$ 个元素，则实数 $a$ 应满足","en":"The set $A = \\{1, a, a^2\\}$ has exactly $3$ elements. Which condition on the real number $a$ is correct?"},"options":{"A":"$a \\neq 0$","B":"$a \\neq 1$","C":{"zh":"$a \\neq 1$ 且 $a \\neq -1$","en":"$a \\neq 1$ and $a \\neq -1$"},"D":{"zh":"$a \\neq 1$ 且 $a \\neq 0$","en":"$a \\neq 1$ and $a \\neq 0$"}}},{"id":"m2f-037","q":{"zh":"已知 $f(x) = x^3 + ax + 2$，且 $f(-2) = 6$，则 $f(2) =$","en":"Given $f(x) = x^3 + ax + 2$ and $f(-2) = 6$, then $f(2) =$"},"options":{"A":"$6$","B":"$-6$","C":"$-2$","D":"$2$"}},{"id":"x02-044","q":{"zh":"不等式 $\\frac{x+2}{x-5} \\geqslant 0$ 的解集是","en":"The solution set of $\\frac{x+2}{x-5} \\geqslant 0$ is"},"options":{"A":"$-2 \\leqslant x \u003c 5$","B":"$-2 \u003c x \\leqslant 5$","C":{"zh":"$x \\leqslant -2$ 或 $x \\geqslant 5$","en":"$x \\leqslant -2$ or $x \\geqslant 5$"},"D":"$(-\\infty, -2] \\cup (5, +\\infty)$"}},{"id":"m1-012","q":{"zh":"不等式 $\\frac{x-1}{x+2} > 0$ 的解集是","en":"The solution set of $\\frac{x-1}{x+2} > 0$ is"},"options":{"A":"$(-2, 1]$","B":"$(-2, 1)$","C":"$(-\\infty, -2) \\cup [1, \\infty)$","D":"$(-\\infty, -2) \\cup (1, \\infty)$"}},{"id":"x07-005","q":{"zh":"已知扇形的半径 $r = 2$，圆心角 $\\alpha = \\frac{\\pi}{2}$（弧度），则该扇形的弧长 $l$ 为","en":"A sector has radius $r = 2$ and central angle $\\alpha = \\frac{\\pi}{2}$ (radians). Its arc length $l$ is"},"options":{"A":"$\\pi$","B":"$\\frac{\\pi}{2}$","C":"$2\\pi$","D":"$\\frac{\\pi}{4}$"}},{"id":"x01-028","q":{"zh":"某校调查 $100$ 名学生的课外兴趣：喜欢足球的 $52$ 人，喜欢篮球的 $41$ 人，喜欢排球的 $35$ 人；喜欢足球和篮球的 $20$ 人，喜欢篮球和排球的 $15$ 人，喜欢足球和排球的 $14$ 人；三种都不喜欢的 $8$ 人。则三种球都喜欢的共有","en":"A survey of $100$ students: $52$ like football, $41$ like basketball, $35$ like volleyball; $20$ like both football and basketball, $15$ basketball and volleyball, $14$ football and volleyball; $8$ like none of the three. How many like all three?"},"options":{"A":{"zh":"$5$ 人","en":"$5$ students"},"B":{"zh":"$13$ 人","en":"$13$ students"},"C":{"zh":"$7$ 人","en":"$7$ students"},"D":{"zh":"$3$ 人","en":"$3$ students"}}},{"id":"m1s-041","q":{"zh":"要建一个面积为 $100\\ \\text{m}^2$ 的矩形花园，则花园周长的最小值是","en":"A rectangular garden must have an area of $100\\ \\text{m}^2$. The minimum possible perimeter is"},"options":{"A":"$20$ m","B":"$40$ m","C":"$50$ m","D":"$80$ m"}},{"id":"m2-064","q":{"zh":"$\\sin 75^\\circ$ 的值是","en":"The value of $\\sin 75^\\circ$ is"},"options":{"A":"$\\frac{\\sqrt{6} - \\sqrt{2}}{4}$","B":"$\\frac{\\sqrt{3} + 1}{4}$","C":"$\\frac{\\sqrt{3} + 1}{2}$","D":"$\\frac{\\sqrt{6} + \\sqrt{2}}{4}$"}},{"id":"x06-074","q":{"zh":"不等式 $\\log_2(x-1)\\le 1$ 的解集是","en":"The solution set of $\\log_2(x-1)\\le 1$ is"},"options":{"A":"$(0,3)$","B":"$[1,2]$","C":"$(1,+\\infty)$","D":"$(1,3]$"}},{"id":"x08-069","q":{"zh":"在 $\\triangle ABC$ 中，$a = 4$，$b = 6$，$A = 30^\\circ$，则满足条件的三角形的个数是","en":"In $\\triangle ABC$, $a = 4$, $b = 6$, and $A = 30^\\circ$. The number of triangles satisfying these conditions is"},"options":{"A":{"zh":"0 个","en":"0"},"B":{"zh":"1 个","en":"1"},"C":{"zh":"2 个","en":"2"},"D":{"zh":"无法确定","en":"cannot be determined"}}},{"id":"x08-062","q":{"zh":"已知 $\\theta\\in\\left(\\frac{\\pi}{4},\\frac{\\pi}{2}\\right)$ 且 $\\sin\\theta-\\cos\\theta=\\frac{\\sqrt{3}}{3}$，则 $\\cos 2\\theta=$","en":"Given $\\theta\\in\\left(\\frac{\\pi}{4},\\frac{\\pi}{2}\\right)$ and $\\sin\\theta-\\cos\\theta=\\frac{\\sqrt{3}}{3}$, find $\\cos 2\\theta$."},"options":{"A":"$\\frac{2}{3}$","B":"$-\\frac{2}{3}$","C":"$\\frac{\\sqrt{5}}{3}$","D":"$-\\frac{\\sqrt{5}}{3}$"}},{"id":"x06-023","q":{"zh":"函数 $f(x)=\\dfrac{1}{\\log_2(x-1)}$ 的定义域是","en":"The domain of $f(x)=\\dfrac{1}{\\log_2(x-1)}$ is"},"options":{"A":{"zh":"$(1,+\\infty)$（漏 $x\\neq2$，错）","en":"$(1,+\\infty)$ (forgets $x\\neq2$; wrong)"},"B":"$(1,2)\\cup(2,+\\infty)$","C":{"zh":"$(0,1)\\cup(1,+\\infty)$（真数方向错）","en":"$(0,1)\\cup(1,+\\infty)$ (wrong argument side; wrong)"},"D":{"zh":"$[1,+\\infty)$（含无定义点，错）","en":"$[1,+\\infty)$ (includes undefined points; wrong)"}}},{"id":"x07-042","q":{"zh":"函数 $y=\\sin x$ 在 $[0,2\\pi]$ 上的单调递减区间是","en":"The decreasing interval of $y=\\sin x$ on $[0,2\\pi]$ is"},"options":{"A":"$\\left[0,\\frac{\\pi}{2}\\right]$","B":"$\\left[\\frac{\\pi}{2},\\frac{3\\pi}{2}\\right]$","C":"$[\\pi,2\\pi]$","D":"$[0,\\pi]$"}},{"id":"m2-021","q":{"zh":"若 $\\sin\\theta > 0$ 且 $\\cos\\theta \u003c 0$，则 $\\theta$ 在第几象限？","en":"If $\\sin\\theta > 0$ and $\\cos\\theta \u003c 0$, which quadrant is $\\theta$ in?"},"options":{"A":{"zh":"第一象限","en":"First quadrant"},"B":{"zh":"第四象限","en":"Fourth quadrant"},"C":{"zh":"第三象限","en":"Third quadrant"},"D":{"zh":"第二象限","en":"Second quadrant"}}},{"id":"m2f-094","q":{"zh":"若 $\\log_2 3 = t$，则 $\\log_8 9 =$","en":"If $\\log_2 3 = t$, then $\\log_8 9 =$"},"options":{"A":"$\\frac{3t}{2}$","B":"$t^2$","C":"$\\frac{t}{3}$","D":"$\\frac{2t}{3}$"}},{"id":"m2f-036","q":{"zh":"已知 $f(x) = ax^2 + bx + 3a + b$ 是定义在 $[a-1, 2a]$ 上的偶函数，则 $a + b =$","en":"$f(x) = ax^2 + bx + 3a + b$ is an even function defined on $[a-1, 2a]$. Then $a + b =$"},"options":{"A":"$\\frac{1}{3}$","B":"$1$","C":"$-\\frac{1}{3}$","D":"$0$"}},{"id":"m3a-044","q":{"zh":"圆 $x^2 + y^2 = 4$ 与圆 $(x-3)^2 + (y-4)^2 = 9$ 的位置关系是","en":"The circles $x^2 + y^2 = 4$ and $(x-3)^2 + (y-4)^2 = 9$ are"},"options":{"A":{"zh":"相交","en":"Intersecting"},"B":{"zh":"内切","en":"Internally tangent"},"C":{"zh":"外离","en":"Separate (one outside the other)"},"D":{"zh":"外切","en":"Externally tangent"}}},{"id":"x05-029","q":{"zh":"不等式 $4^x-3\\cdot2^x+2>0$ 的解集是","en":"The solution set of $4^x-3\\cdot2^x+2>0$ is"},"options":{"A":"$(-\\infty,0)\\cup(1,+\\infty)$","B":"$(0,1)$","C":"$(-\\infty,1)\\cup(2,+\\infty)$","D":"$(1,2)$"}},{"id":"x08-023","q":{"zh":"化简 $\\sin x-\\sqrt{3}\\cos x$，结果为","en":"Simplify $\\sin x-\\sqrt{3}\\cos x$."},"options":{"A":"$2\\sin\\left(x+\\frac{\\pi}{3}\\right)$","B":"$2\\cos\\left(x-\\frac{\\pi}{3}\\right)$","C":"$2\\sin\\left(\\frac{\\pi}{3}-x\\right)$","D":"$2\\sin\\left(x-\\frac{\\pi}{3}\\right)$"}},{"id":"x03-012","q":{"zh":"已知函数 $f(x)$ 的图像是直线，且经过点 $(1,3)$ 与 $(3,7)$，则 $f(0)+f(2)$ 的值为","en":"The graph of $f$ is a line through $(1,3)$ and $(3,7)$. Find $f(0)+f(2)$."},"options":{"A":"$4$","B":"$8$","C":"$6$","D":"$10$"}},{"id":"x21-089","q":{"zh":"已知空间向量 $\\vec{a}$，$\\vec{b}$ 满足 $|\\vec{a}|=2$，$|\\vec{b}|=3$，$|\\vec{a}+\\vec{b}|=4$，则 $|\\vec{a}-\\vec{b}|=$","en":"Space vectors $\\vec{a}$ and $\\vec{b}$ satisfy $|\\vec{a}|=2$, $|\\vec{b}|=3$, and $|\\vec{a}+\\vec{b}|=4$. Then $|\\vec{a}-\\vec{b}|=$"},"options":{"A":"$\\sqrt{6}$","B":"$2\\sqrt{2}$","C":"$\\sqrt{10}$","D":"$4$"}},{"id":"x07-064","q":{"zh":"函数 $y=\\cos(4x)$ 的最小正周期是","en":"The fundamental period of $y=\\cos(4x)$ is"},"options":{"A":"$2\\pi$","B":"$\\pi$","C":"$\\frac{\\pi}{4}$","D":"$\\frac{\\pi}{2}$"}},{"id":"x08-061","q":{"zh":"化简 $\\frac{\\sin 2\\theta}{\\sin\\theta}\\cdot\\frac{\\cos\\theta}{1+\\cos 2\\theta}$（其中 $\\sin\\theta\\cos\\theta\\neq0$）的结果是","en":"Simplify $\\frac{\\sin 2\\theta}{\\sin\\theta}\\cdot\\frac{\\cos\\theta}{1+\\cos 2\\theta}$ (where $\\sin\\theta\\cos\\theta\\neq0$)."},"options":{"A":"$\\tan\\theta$","B":"$1$","C":"$\\cot\\theta$","D":"$\\cos 2\\theta$"}},{"id":"m4-048","q":{"zh":"袋中有 $5$ 个红球和 $3$ 个白球，任取 $2$ 个。恰好 $1$ 红 $1$ 白的概率是","en":"A bag has 5 red and 3 white balls. Draw 2. P(exactly 1 red, 1 white) ="},"options":{"A":"$\\frac{15}{28}$","B":"$\\frac{5}{14}$","C":"$\\frac{3}{7}$","D":"$\\frac{15}{56}$"}},{"id":"x11-084","q":{"zh":"设数列 $\\{a_n\\}$ 的各项均为正数，则“$\\{\\lg a_n\\}$ 是等差数列”是“$\\{a_n\\}$ 是等比数列”的（　　）","en":"All terms of $\\{a_n\\}$ are positive. The statement that $\\{\\lg a_n\\}$ is arithmetic is ______ for $\\{a_n\\}$ to be geometric."},"options":{"A":{"zh":"充分不必要条件","en":"sufficient but not necessary"},"B":{"zh":"必要不充分条件","en":"necessary but not sufficient"},"C":{"zh":"充要条件","en":"necessary and sufficient"},"D":{"zh":"既不充分也不必要条件","en":"neither necessary nor sufficient"}}},{"id":"m2t-003","q":{"zh":"扇形的半径为 $2$，圆心角为 $\\frac{\\pi}{3}$，则扇形的面积为","en":"A sector has radius $2$ and central angle $\\frac{\\pi}{3}$. Its area is"},"options":{"A":"$\\frac{2\\pi}{3}$","B":"$\\frac{4\\pi}{3}$","C":"$\\frac{\\pi}{3}$","D":"$\\pi$"}},{"id":"x08-009","q":{"zh":"化简 $\\sin\\theta\\cos\\theta(\\tan\\theta+\\cot\\theta)$（其中 $\\sin\\theta\\neq0$，$\\cos\\theta\\neq0$），结果为","en":"Simplify $\\sin\\theta\\cos\\theta(\\tan\\theta+\\cot\\theta)$ (where $\\sin\\theta\\neq0$ and $\\cos\\theta\\neq0$)."},"options":{"A":"$\\tan^2\\theta$","B":"$\\sec^2\\theta$","C":"$1$","D":"$\\sin^2\\theta$"}},{"id":"m1-042","q":{"zh":"不等式 $5 - 2x > 0$ 的解集是","en":"The solution of $5 - 2x > 0$ is"},"options":{"A":"$x > \\frac{5}{2}$","B":"$x \u003c \\frac{5}{2}$","C":"$x > -\\frac{5}{2}$","D":"$x \u003c -\\frac{5}{2}$"}},{"id":"x07-027","q":{"zh":"下列关于函数 $y=2\\sin x$ 的说法，错误的是","en":"Which of the following statements about the function $y=2\\sin x$ is FALSE"},"options":{"A":{"zh":"最大值为 $2$","en":"Its maximum is $2$"},"B":{"zh":"最小正周期为 $2\\pi$","en":"Its fundamental period is $2\\pi$"},"C":{"zh":"最小值为 $-1$","en":"Its minimum is $-1$"},"D":{"zh":"它是奇函数","en":"It is an odd function"}}},{"id":"m2-105","q":{"zh":"函数 $f(x) = |x|$ 是","en":"The function $f(x) = |x|$ is"},"options":{"A":{"zh":"奇函数","en":"Odd function"},"B":{"zh":"既是奇函数又是偶函数","en":"Both odd and even"},"C":{"zh":"非奇非偶函数","en":"Neither odd nor even"},"D":{"zh":"偶函数","en":"Even function"}}},{"id":"m2-154","q":{"zh":"单位圆上角 $\\theta = \\frac{\\pi}{2}$ 对应的点坐标是","en":"On the unit circle, the point for $\\theta = \\frac{\\pi}{2}$ is"},"options":{"A":"$(1, 0)$","B":"$(0, 1)$","C":"$(-1, 0)$","D":"$(0, -1)$"}},{"id":"m1-058","q":{"zh":"不等式 $\\frac{x^2 - x - 2}{x^2 + x + 1} \u003c 0$ 的解集是","en":"The solution of $\\frac{x^2 - x - 2}{x^2 + x + 1} \u003c 0$ is"},"options":{"A":"$(-1, 2)$","B":"$(-\\infty, -1) \\cup (2, \\infty)$","C":"$(-2, 1)$","D":"$\\mathbb{R}$"}},{"id":"x08-077","q":{"zh":"$2\\cos^2\\dfrac{\\pi}{8} - 1$ 的值是","en":"The value of $2\\cos^2\\dfrac{\\pi}{8} - 1$ is"},"options":{"A":"$\\dfrac{\\sqrt{2}}{2}$","B":"$\\dfrac{1}{2}$","C":"$\\dfrac{\\sqrt{3}}{2}$","D":"$\\dfrac{\\sqrt{2}}{4}$"}},{"id":"m4s-034","q":{"zh":"某快递站 $8$ 天的日投诉件数从小到大排列为 $2, 4, 5, 7, 8, 10, 11, 13$。这组数据的第 $75$ 百分位数是","en":"Daily complaint counts at a courier station over $8$ days, sorted: $2, 4, 5, 7, 8, 10, 11, 13$. The 75th percentile of the data is"},"options":{"A":"10","B":"10.5","C":"11","D":"12"}}]};
+  var KEY = 'csca-exam-' + DATA.slug;
+  var state = { answers: {}, name: '', sid: '', startedAt: Date.now(), submittedAt: 0, locked: false, lang: 'zh' };
+  var saveTimer = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        state = Object.assign(state, s);
+      }
+    } catch (e) {}
+    if (!state.startedAt) state.startedAt = Date.now();
+  }
+  function persist() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }, 150);
+  }
+  function fmt(sec) {
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function txt(v) { return typeof v === 'string' ? v : (v[state.lang] || v.zh || v.en || ''); }
+  function renderMath(root) {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(root, { delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ], throwOnError: false });
+    }
+  }
+
+  function render() {
+    document.getElementById('title').textContent = DATA.title;
+    document.getElementById('subtitle').textContent = DATA.subtitle || '';
+    document.getElementById('instructions').textContent = DATA.instructions || '';
+    document.getElementById('count').textContent = String(DATA.questions.length);
+    if (DATA.durationMinutes) {
+      document.getElementById('limit').textContent = DATA.durationMinutes + ' 分钟';
+    } else {
+      document.getElementById('limitWrap').style.display = 'none';
+    }
+
+    var graded = Boolean(DATA.showResults && state.locked && state.submittedAt);
+    var host = document.getElementById('paper');
+    host.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var chosen = state.answers[q.id] || null;
+      var box = document.createElement('section');
+      box.className = 'q' + (graded ? (chosen === q.correct ? ' ok' : ' bad') : '');
+      box.setAttribute('data-index', String(i));
+      var h = document.createElement('h3');
+      h.textContent = (i + 1) + '.';
+      box.appendChild(h);
+      var stem = document.createElement('div');
+      stem.className = 'stem';
+      stem.textContent = txt(q.q);
+      box.appendChild(stem);
+      ['A', 'B', 'C', 'D'].forEach(function (K) {
+        if (!q.options[K]) return;
+        var row = document.createElement('div');
+        var cls = 'opt' + (chosen === K ? ' on' : '');
+        if (graded && K === q.correct) cls += ' correct';
+        else if (graded && chosen === K) cls += ' wrong';
+        row.className = cls;
+        row.setAttribute('data-q', q.id);
+        row.setAttribute('data-k', K);
+        var k = document.createElement('span'); k.className = 'k'; k.textContent = K + '.';
+        var v = document.createElement('span'); v.textContent = txt(q.options[K]);
+        row.appendChild(k); row.appendChild(v);
+        if (graded && K === q.correct) {
+          var okBadge = document.createElement('span');
+          okBadge.className = 'badge ok';
+          okBadge.textContent = '正确答案';
+          row.appendChild(okBadge);
+        }
+        if (graded && chosen === K) {
+          var pick = document.createElement('span');
+          pick.className = 'badge ' + (K === q.correct ? 'ok' : 'bad');
+          pick.textContent = K === q.correct ? '你的选择 ✓' : '你的选择 ✗';
+          row.appendChild(pick);
+        }
+        row.addEventListener('click', function () {
+          if (state.locked) return;
+          state.answers[q.id] = (state.answers[q.id] === K ? null : K);
+          persist();
+          render();
+        });
+        box.appendChild(row);
+      });
+      if (graded && q.explanation) {
+        var det = document.createElement('details');
+        det.className = 'explain';
+        det.open = true;
+        var sum = document.createElement('summary');
+        sum.textContent = '解析';
+        var body = document.createElement('div');
+        body.textContent = txt(q.explanation);
+        det.appendChild(sum); det.appendChild(body);
+        box.appendChild(det);
+      }
+      host.appendChild(box);
+    });
+    renderMath(host);
+    document.getElementById('sName').value = state.name || '';
+    document.getElementById('sId').value = state.sid || '';
+    document.getElementById('btnSubmit').hidden = !DATA.showResults || graded;
+    renderResult(graded);
+    renderPanel();
+  }
+
+  function buildPanelGrid() {
+    var grid = document.getElementById('panelGrid');
+    if (grid.childElementCount === DATA.questions.length) return;
+    grid.innerHTML = '';
+    DATA.questions.forEach(function (q, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = String(i + 1);
+      b.addEventListener('click', function () { jumpToQuestion(i); });
+      grid.appendChild(b);
+    });
+  }
+  function jumpToQuestion(i) {
+    var el = document.querySelector('.q[data-index="' + i + '"]');
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('flash');
+    setTimeout(function () { el.classList.remove('flash'); }, 1200);
+  }
+  function renderPanel() {
+    var total = DATA.questions.length;
+    var done = 0;
+    DATA.questions.forEach(function (q) { if (state.answers[q.id]) done += 1; });
+    document.getElementById('doneCount').textContent = String(done);
+    document.getElementById('todoCount').textContent = String(total - done);
+    document.getElementById('panelProgress').style.width = (total ? Math.round((done / total) * 100) : 0) + '%';
+    buildPanelGrid();
+    var grid = document.getElementById('panelGrid');
+    for (var i = 0; i < grid.children.length; i += 1) {
+      grid.children[i].className = state.answers[DATA.questions[i].id] ? 'ans' : '';
+    }
+    document.getElementById('panelNext').disabled = done >= total;
+  }
+
+  function fmtDuration(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    if (m <= 0) return s + ' 秒';
+    return m + ' 分 ' + (s < 10 ? '0' : '') + s + ' 秒';
+  }
+
+  function renderResult(graded) {
+    var el = document.getElementById('result');
+    if (!graded) {
+      el.hidden = true;
+      el.className = 'result';
+      el.innerHTML = '';
+      return;
+    }
+    var total = DATA.questions.length;
+    var correct = 0, unanswered = 0;
+    DATA.questions.forEach(function (q) {
+      var chosen = state.answers[q.id] || null;
+      if (!chosen) unanswered += 1;
+      if (chosen && chosen === q.correct) correct += 1;
+    });
+    var pct = total ? Math.round((correct / total) * 100) : 0;
+    var seconds = (state.submittedAt - state.startedAt) / 1000;
+    el.innerHTML = '';
+    el.hidden = false;
+    el.className = 'result show';
+
+    var h = document.createElement('h2');
+    h.textContent = '批改结果';
+    el.appendChild(h);
+
+    var score = document.createElement('div');
+    score.className = 'result-score';
+    score.appendChild(document.createTextNode(correct + ' / ' + total + ' '));
+    var small = document.createElement('small');
+    small.textContent = '题正确';
+    score.appendChild(small);
+    el.appendChild(score);
+
+    var meta = document.createElement('div');
+    meta.className = 'result-meta';
+    meta.textContent = '正确率 ' + pct + '% · 用时 ' + fmtDuration(seconds) + ' · 未作答 ' + unanswered + ' 题';
+    el.appendChild(meta);
+
+    var who = document.createElement('div');
+    who.className = 'result-meta';
+    who.textContent = (state.name || '未填写姓名') + (state.sid ? '（' + state.sid + '）' : '') +
+      ' · 提交于 ' + new Date(state.submittedAt).toLocaleString();
+    el.appendChild(who);
+
+    var hint = document.createElement('div');
+    hint.className = 'result-hint';
+    hint.textContent = '需要纸质版时，点击“打印 / PDF”，批改结果和解析会一起打印。';
+    el.appendChild(hint);
+  }
+
+  function submitPaper() {
+    if (!DATA.showResults || state.locked) return;
+    var unanswered = 0;
+    DATA.questions.forEach(function (q) { if (!state.answers[q.id]) unanswered += 1; });
+    if (unanswered > 0 && !confirm('还有 ' + unanswered + ' 题未作答，确定提交吗？提交后不能修改答案。')) return;
+    state.locked = true;
+    state.submittedAt = Date.now();
+    persist();
+    render();
+    var el = document.getElementById('result');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function tick() {
+    var panelTimer = document.getElementById('panelTimer');
+    if (state.locked && state.submittedAt) {
+      var stopped = fmt((state.submittedAt - state.startedAt) / 1000);
+      document.getElementById('timer').textContent = stopped;
+      panelTimer.textContent = stopped;
+      return;
+    }
+    if (!DATA.durationMinutes) {
+      var used = fmt((Date.now() - state.startedAt) / 1000);
+      document.getElementById('timer').textContent = used;
+      panelTimer.textContent = used;
+      return;
+    }
+    var left = DATA.durationMinutes * 60 - (Date.now() - state.startedAt) / 1000;
+    var el = document.getElementById('timer');
+    el.textContent = fmt(left);
+    panelTimer.textContent = fmt(left);
+    var warn = left <= 300;
+    if (warn) el.classList.add('warn');
+    panelTimer.classList.toggle('warn', warn);
+    if (left <= 0 && !state.locked) {
+      state.locked = true; state.submittedAt = Date.now(); persist();
+      if (DATA.showResults) {
+        render();
+        var result = document.getElementById('result');
+        if (result) result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        var done = document.getElementById('done');
+        done.style.display = 'block';
+        done.textContent = '时间到，答案已锁定。请点击“导出答案”交给老师。';
+      }
+    }
+  }
+
+  document.getElementById('sName').addEventListener('input', function (e) { state.name = e.target.value; persist(); });
+  document.getElementById('sId').addEventListener('input', function (e) { state.sid = e.target.value; persist(); });
+
+  document.getElementById('btnClear').addEventListener('click', function () {
+    if (!confirm(state.locked ? '重新作答会清除本次批改结果，确定继续？' : '确定清空所有已选答案？')) return;
+    state.answers = {}; state.locked = false; state.submittedAt = 0;
+    document.getElementById('done').style.display = 'none';
+    persist(); render();
+  });
+
+  document.getElementById('panelToggle').addEventListener('click', function () {
+    var panel = document.getElementById('panel');
+    panel.classList.toggle('collapsed');
+    this.textContent = panel.classList.contains('collapsed') ? '▸' : '▾';
+  });
+  document.getElementById('panelNext').addEventListener('click', function () {
+    for (var i = 0; i < DATA.questions.length; i += 1) {
+      if (!state.answers[DATA.questions[i].id]) { jumpToQuestion(i); return; }
+    }
+  });
+
+  document.getElementById('btnSubmit').addEventListener('click', submitPaper);
+  document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+
+  document.getElementById('btnExport').addEventListener('click', function () {
+    var out = {
+      paperId: DATA.paperId,
+      slug: DATA.slug,
+      student: { name: state.name || '', id: state.sid || '' },
+      answers: DATA.questions.map(function (q) { return { problemId: q.id, selected: state.answers[q.id] || null }; }),
+      startedAt: state.startedAt,
+      submittedAt: state.submittedAt || Date.now(),
+      durationSeconds: Math.round(((state.submittedAt || Date.now()) - state.startedAt) / 1000)
+    };
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'answers-' + DATA.slug + '-' + (state.name || 'student') + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('btnImport').addEventListener('click', function () { document.getElementById('fileInput').click(); });
+  document.getElementById('fileInput').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        if (state.locked) { alert('本卷已提交，不能导入答案。如需重做请先点“清空”。'); e.target.value = ''; return; }
+        var obj = JSON.parse(String(reader.result));
+        if (obj.paperId && obj.paperId !== DATA.paperId) {
+          if (!confirm('这份答案属于另一份试卷，仍要导入吗？')) return;
+        }
+        var map = {};
+        (obj.answers || []).forEach(function (a) { if (a.selected) map[a.problemId] = a.selected; });
+        state.answers = map;
+        if (obj.student) { state.name = obj.student.name || state.name; state.sid = obj.student.id || state.sid; }
+        persist(); render();
+      } catch (err) { alert('文件格式不正确'); }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  });
+
+  document.getElementById('btnLang').addEventListener('click', function () {
+    state.lang = state.lang === 'zh' ? 'en' : 'zh';
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    persist(); render();
+  });
+
+  function boot() {
+    load();
+    document.getElementById('btnLang').textContent = state.lang === 'zh' ? 'EN' : '中文';
+    if (DATA.passcode) {
+      var gate = document.getElementById('gate');
+      gate.hidden = false;
+      document.getElementById('gateBtn').addEventListener('click', function () {
+        if (document.getElementById('gateInput').value === DATA.passcode) {
+          gate.hidden = true;
+        } else {
+          document.getElementById('gateErr').textContent = '口令不正确';
+        }
+      });
+    }
+    render();
+    tick();
+    setInterval(tick, 1000);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
